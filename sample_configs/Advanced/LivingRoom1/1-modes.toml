@@ -1,0 +1,10 @@
+# Each mode specifies a layer stack. Can have multiple deep
+[modes]
+Satellite=Global1:MainTV:MainSat
+Movie=Global1:MainTV:BluRay
+# AVForwarding forwards all IR commands to IR repeater in the A/V rack:
+Music=Global1:AVForwarding
+# Global2 does not respond to A/V receiver commands...:
+RearTV=Global2:RearTV:RearSat
+#default mode is enabled on power-on:
+default=Satellite
