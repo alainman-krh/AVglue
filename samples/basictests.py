@@ -1,5 +1,6 @@
 from AVglue.Base import OperatingEnvironment, SignalTraps
 from AVglue.Actions import *
+from AVglue.Windows.Actions import Action_SendKeys
 
 
 #==Signals and traps
@@ -21,7 +22,8 @@ act_calcopen = Action_ExecuteShell("calc.exe")
 
 #==More complex test
 #===============================================================================
-act_dothething = Action_ExecuteSequence("CALCTEST", [
+#Will be stored in "PCTAXES" subdirectory (traps/actions tax-related activities)
+act_calctest = Action_ExecuteSequence("PCTAXES:CALCTEST", [
 	Action_TriggerLocalSignal("mute"),
 	Action_TriggerLocalSignal("muteX"),
 	Action_ExecuteShell("calc.exe"),
@@ -30,4 +32,4 @@ act_dothething = Action_ExecuteSequence("CALCTEST", [
 	Action_TriggerLocalSignal("mute"),
 ])
 
-act_dothething.run(env)
+act_calctest.run(env)

@@ -1,9 +1,8 @@
-#AVglue/Actions.py
+#AVglue/Actions.py: Platform-independent AVglue actions
 #-------------------------------------------------------------------------------
 from .Base import Signal, OperatingEnvironment, AbstractAction
 from time import sleep
-from os import system
-import win32com.client as COM
+from os import system #Handled by python in platform-independent fashion
 
 
 #==Concrete Actions
@@ -36,28 +35,6 @@ class Action_Wait(AbstractAction):
 		sleep(self.twait)
 	def serialize(self):
 		return f"WAIT {self.twait}"
-
-#-------------------------------------------------------------------------------
-class Action_SendKeys(AbstractAction):
-	"""Sends a key sequence"""
-	#TODO: Send to a particular application???
-	def __init__(self, appname, seq, twait=0):
-		"""-appname=0 sends key sequence to active window"""
-		self.appname = appname
-		self.seq = seq
-		self.twait = twait
-
-	def run(self, env:OperatingEnvironment):
-		shell = COM.Dispatch("WScript.Shell")
-		if self.appname not in (0, None, "0"):
-			shell.AppActivate("Calculator")
-			if self.twait > 0:
-				sleep(self.twait)
-		print("Sending:", self.seq)
-		shell.SendKeys(self.seq)
-
-	def serialize(self):
-		return f"SENDKEYS {self.appname}, {self.seq}, {self.twait}"
 
 #-------------------------------------------------------------------------------
 class Action_LogString(AbstractAction):
