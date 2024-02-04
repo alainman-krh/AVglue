@@ -32,7 +32,14 @@ class OperatingEnvironment():
 		self.modes = {}
 		self.mode_add("OFF", tuple())
 		self.mode_setactive("OFF")
-	
+		self.state={} #Actions can store data here
+
+	def log_info(self, msg):
+		print(msg)
+
+	def log_error(self, msg):
+		print(msg)
+
 	def mode_add(self, id, layer_stack):
 		self.modes[id] = tuple(layer_stack) #tuples are more efficient
 
@@ -48,7 +55,8 @@ class OperatingEnvironment():
 				action:AbstractAction
 				action.run(self)
 				return
-		print(f"Signal not trapped: {sig.id}")
+		self.log_error(f"Signal not trapped: {sig.id}")
+
 
 
 #==Abstract bulding blocks
@@ -60,3 +68,6 @@ class AbstractAction(metaclass=ABCMeta):
 	@abstractmethod
 	def serialize(self):
 		return ""
+	@staticmethod
+	def build_from_strargs(strargs):
+		pass

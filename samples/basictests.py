@@ -1,6 +1,6 @@
 from AVglue.Base import OperatingEnvironment, SignalTraps
 from AVglue.Actions import *
-from AVglue.Windows.Actions import Action_SendKeys
+from AVglue.Windows.Actions import *
 
 
 #==Signals and traps
@@ -28,8 +28,13 @@ act_calctest = Action_ExecuteSequence("PCTAXES:CALCTEST", [
 	Action_TriggerLocalSignal("muteX"),
 	Action_ExecuteShell("calc.exe"),
 	Action_Wait(0.5),
-	Action_SendKeys(0, "3{+}14{ENTER}"),
+	#Action_SendKeys(0, "3{+}14{ENTER}"),
+	Action_SendKeys("Calculator", "3{+}14{ENTER}"),
 	Action_TriggerLocalSignal("mute"),
+	Action_Wait(0.5),
+	Action_SetVolume("MASTER", -20),
+	Action_Wait(0.5),
+	Action_SetVolume("MASTER", 0),
 ])
 
 act_calctest.run(env)

@@ -17,6 +17,11 @@ To make the `AVglue` library to be available to your own application, you must a
   `export PYTHONPATH=/path/to/AVglue/libpython`
 - ...
 
+The following libs are required to use `AVglue` (and likely not installed):
+- (Windows): `comtypes`, `pycaw`
+
+Python libraries can be installed 
+
 Usage examples are available in the [samples](samples/) subdirectory.
 
 ## Compatibility
