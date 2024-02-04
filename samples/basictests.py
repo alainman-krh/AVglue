@@ -1,5 +1,4 @@
-from AVglue.Base import VirtualSignal
+from AVglue.Actions import *
 
-
-vs = VirtualSignal(5)
-print("DONE")
+act_calcopen = Action_ExecuteShell("calc.exe")
+act_calcopen.run()
