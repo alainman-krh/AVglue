@@ -1,6 +1,6 @@
 #AVglue/Actions.py
 #-------------------------------------------------------------------------------
-from .Base import AbstractAction, OperatingEnvironment
+from .Base import Signal, OperatingEnvironment, AbstractAction
 from time import sleep
 from os import system
 import win32com.client as COM
@@ -13,7 +13,7 @@ class Action_TriggerLocalSignal(AbstractAction):
 	def __init__(self, signame):
 		self.signame = signame
 	def run(self, env:OperatingEnvironment):
-		return #TODO
+		env.signal_trigger(Signal(self.signame))
 	def serialize(self):
 		return f"TRIGLCL {self.signame}"
 
@@ -58,6 +58,16 @@ class Action_SendKeys(AbstractAction):
 
 	def serialize(self):
 		return f"SENDKEYS {self.appname}, {self.seq}, {self.twait}"
+
+#-------------------------------------------------------------------------------
+class Action_LogString(AbstractAction):
+	"""Log a pre-determined string value"""
+	def __init__(self, logstr):
+		self.logstr = logstr
+	def run(self, env:OperatingEnvironment):
+		print(self.logstr)
+	def serialize(self):
+		return f"LOGSTR {self.logstr}"
 
 #-------------------------------------------------------------------------------
 class Action_ExecuteShell(AbstractAction):

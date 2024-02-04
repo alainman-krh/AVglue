@@ -3,6 +3,27 @@
 from abc import ABCMeta, abstractmethod
 
 
+#==Signals and traps
+#===============================================================================
+class Signal():
+	def __init__(self, id):
+		self.id = id
+
+	def serialize(self):
+		return f"SIG {self.id}"
+
+
+#-------------------------------------------------------------------------------
+class SignalTraps():
+	def __init__(self, response_map=None):
+		if response_map is None:
+			response_map = {}
+		self.response_map = response_map
+
+	def trap(self, sig:Signal):
+		return self.response_map.get(sig.id, None)
+
+
 #==
 #===============================================================================
 class OperatingEnvironment():
@@ -19,6 +40,16 @@ class OperatingEnvironment():
 		self.mode_activeid = id
 		self.mode_activestack = self.modes[id] #Keep it cached (avoid constant lookup)
 
+	def signal_trigger(self, sig:Signal):
+		for layer in self.mode_activestack:
+			layer:SignalTraps
+			action = layer.trap(sig)
+			if action is not None:
+				action:AbstractAction
+				action.run(self)
+				return
+		print(f"Signal not trapped: {sig.id}")
+
 
 #==Abstract bulding blocks
 #===============================================================================
@@ -29,13 +60,3 @@ class AbstractAction(metaclass=ABCMeta):
 	@abstractmethod
 	def serialize(self):
 		return ""
-
-
-#==Main signal class
-#===============================================================================
-class Signal():
-	def __init__(self, id):
-		self.id = id
-
-	def serialize(self):
-		return f"SIG {self.id}"
