@@ -1,8 +1,9 @@
 #AVglue/Actions.py
 #-------------------------------------------------------------------------------
 from .Base import AbstractAction
+from time import sleep
 from os import system
-import ctypes
+import win32com.client as COM
 
 
 #==Concrete Actions
@@ -23,21 +24,35 @@ class Action_TriggerComSignal(AbstractAction):
 	def serialize(self):
 		return f"TRIGCOM {self.signame}"
 
+class Action_Wait(AbstractAction):
+	"""Wait for a specified amount of time"""
+	def __init__(self, twait=0):
+		self.twait = twait
+	def run(self):
+		sleep(self.twait)
+	def serialize(self):
+		return f"WAIT {self.twait}"
+
 class Action_SendKeys(AbstractAction):
 	"""Sends a key sequence"""
 	#TODO: Send to a particular application???
-	def __init__(self, wnd, seq):
-		"""-wnd=0 sends key sequence to active window"""
-		self.wnd = wnd
+	def __init__(self, appname, seq, twait=0):
+		"""-appname=0 sends key sequence to active window"""
+		self.appname = appname
 		self.seq = seq
+		self.twait = twait
 
 	def run(self):
+		shell = COM.Dispatch("WScript.Shell")
+		if self.appname not in (0, None, "0"):
+			shell.AppActivate("Calculator")
+			if self.twait > 0:
+				sleep(self.twait)
 		print("Sending:", self.seq)
-		result = ctypes.windll.user32.SendInput(self.seq)
-		return result
+		shell.SendKeys(self.seq)
 
 	def serialize(self):
-		return f"SENDKEYS {self.wnd} {self.seq}"
+		return f"SENDKEYS {self.appname}, {self.seq}, {self.twait}"
 
 class Action_ExecuteShell(AbstractAction):
 	"""Execute shell - not necessarily portable"""
