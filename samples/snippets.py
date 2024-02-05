@@ -65,6 +65,7 @@ volume = cast(interface, POINTER(IAudioEndpointVolume))
 print(volume.GetMute())
 print(volume.GetVolumeRange())
 print(volume.GetMasterVolumeLevel()) #dB
+print(volume.GetVolumeStepInfo()) #First return value is volume level from 0 ->50
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 volume.SetMasterVolumeLevel(-20.0, None)
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

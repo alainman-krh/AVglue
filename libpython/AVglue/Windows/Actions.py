@@ -1,9 +1,7 @@
 #AVglue/Windows/Actions.py: Windows integrations
 #-------------------------------------------------------------------------------
 from AVglue.Base import OperatingEnvironment, AbstractAction
-from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
-from ctypes import cast, POINTER
-from comtypes import CLSCTX_ALL
+from pycaw.pycaw import IAudioEndpointVolume
 from time import sleep
 import win32com.client as COM
 
@@ -34,22 +32,44 @@ class Action_SendKeys(AbstractAction):
 		return f"SENDKEYS {self.appname} {self.seq} {self.twait}"
 
 #-------------------------------------------------------------------------------
-class Action_SetVolume(AbstractAction):
-	"""Sets master volume to a specific value"""
-	#TODO: Send to a particular application???
+class Action_VolumeSet(AbstractAction):
+	"""Sets channel volume to a specific value"""
 	def __init__(self, chanid, level_dB):
 		self.chanid = chanid
 		self.level_dB = level_dB
-		devices = AudioUtilities.GetSpeakers()
-		interface = devices.Activate(
-			IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
-		self.volume = cast(interface, POINTER(IAudioEndpointVolume))
-
 	def run(self, env:OperatingEnvironment):
 		if "MASTER" == self.chanid:
-			self.volume.SetMasterVolumeLevel(self.level_dB, None)
+			volume:IAudioEndpointVolume = env.state["WINAUDIO:VOLUME"]
+			volume.SetMasterVolumeLevel(self.level_dB, None)
 		else:
 			env.log_info(f"Channel ID not supported: {self.chanid}")
-
 	def serialize(self):
-		return f"SETVOL {self.chanid} {self.level_dB}"
+		return f"VOLSET {self.chanid} {self.level_dB}"
+
+#-------------------------------------------------------------------------------
+class Action_VolumeUp(AbstractAction):
+	"""Step up channel volume"""
+	def __init__(self, chanid):
+		self.chanid = chanid
+	def run(self, env:OperatingEnvironment):
+		if "MASTER" == self.chanid:
+			volume:IAudioEndpointVolume = env.state["WINAUDIO:VOLUME"]
+			volume.VolumeStepUp(None)
+		else:
+			env.log_info(f"Channel ID not supported: {self.chanid}")
+	def serialize(self):
+		return f"VOLUP {self.chanid}"
+
+#-------------------------------------------------------------------------------
+class Action_VolumeDn(AbstractAction):
+	"""Step down channel volume"""
+	def __init__(self, chanid):
+		self.chanid = chanid
+	def run(self, env:OperatingEnvironment):
+		if "MASTER" == self.chanid:
+			volume:IAudioEndpointVolume = env.state["WINAUDIO:VOLUME"]
+			volume.VolumeStepDown(None)
+		else:
+			env.log_info(f"Channel ID not supported: {self.chanid}")
+	def serialize(self):
+		return f"VOLDN {self.chanid}"
