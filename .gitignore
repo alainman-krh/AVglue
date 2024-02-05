@@ -1,2 +1,5 @@
 *.pyc
 *.swp
+*.lnk
+#Don't check in auto-generated launcher:
+AVglue.vbs

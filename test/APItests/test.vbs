@@ -2,7 +2,7 @@
 '- Running from wscript [filename.vbs] will run in windows (graphical) mode.
 '- Running from cscript [filename.vbs] will run in a console.
 WSH.Echo "Hello world"
-Set shell = WSH.CreateObject("WScript.shell")
+Set shell = CreateObject("WScript.shell")
 'shell.Run "calc.exe"
 'WScript.Quit
 
