@@ -27,6 +27,7 @@ class Action_SendKeys(AbstractAction):
 			sleep(self.twait)
 		env.log_info(f"Sending: `{self.seq}`")
 		self.shell.SendKeys(self.seq)
+		return True #success
 
 	def serialize(self):
 		return f"SENDKEYS {self.appname} {self.seq} {self.twait}"
@@ -43,6 +44,8 @@ class Action_VolumeSet(AbstractAction):
 			volume.SetMasterVolumeLevel(self.level_dB, None)
 		else:
 			env.log_info(f"Channel ID not supported: {self.chanid}")
+			return False #Fail
+		return True
 	def serialize(self):
 		return f"VOLSET {self.chanid} {self.level_dB}"
 
@@ -57,6 +60,8 @@ class Action_VolumeUp(AbstractAction):
 			volume.VolumeStepUp(None)
 		else:
 			env.log_info(f"Channel ID not supported: {self.chanid}")
+			return False #Fail
+		return True
 	def serialize(self):
 		return f"VOLUP {self.chanid}"
 
@@ -71,5 +76,7 @@ class Action_VolumeDn(AbstractAction):
 			volume.VolumeStepDown(None)
 		else:
 			env.log_info(f"Channel ID not supported: {self.chanid}")
+			return False #Fail
+		return True
 	def serialize(self):
 		return f"VOLDN {self.chanid}"

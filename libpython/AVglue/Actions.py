@@ -1,30 +1,33 @@
 #AVglue/Actions.py: Platform-independent AVglue actions
 #-------------------------------------------------------------------------------
-from .Base import Signal, OperatingEnvironment, AbstractAction
+from .Base import *
 from time import sleep
 from os import system #Handled by python in platform-independent fashion
 
 
 #==Concrete Actions
 #===============================================================================
-class Action_TriggerLocalSignal(AbstractAction):
+class Action_TriggerLocal(AbstractAction):
 	"""Trigger a signal that gets processed locally"""
-	def __init__(self, signame):
-		self.signame = signame
+	def __init__(self, sig:Signal, data_int64=None):
+		self.sig = sig
+		self.data_int64 = data_int64
 	def run(self, env:OperatingEnvironment):
-		env.signal_trigger(Signal(self.signame))
+		env.data_int64 = self.data_int64
+		return env.signal_trigger(self.sig)
 	def serialize(self):
-		return f"TRIGLCL {self.signame}"
+		return f'TRIGLCL "{self.sig.serialize()}"'
 
 #-------------------------------------------------------------------------------
 class Action_TriggerComSignal(AbstractAction):
 	"""Trigger a signal that gets sent through a com device"""
-	def __init__(self, signame):
-		self.signame = signame
+	def __init__(self, sig:Signal, data_int64=None):
+		self.sig = sig
+		self.data_int64 = data_int64
 	def run(self, env:OperatingEnvironment):
-		return #TODO
+		return True #TODO
 	def serialize(self):
-		return f"TRIGCOM {self.signame}"
+		return f'TRIGCOM "{self.sig.serialize()}"'
 
 #-------------------------------------------------------------------------------
 class Action_Wait(AbstractAction):
@@ -33,6 +36,7 @@ class Action_Wait(AbstractAction):
 		self.twait = twait
 	def run(self, env:OperatingEnvironment):
 		sleep(self.twait)
+		return True
 	def serialize(self):
 		return f"WAIT {self.twait}"
 
@@ -43,8 +47,28 @@ class Action_LogString(AbstractAction):
 		self.logstr = logstr
 	def run(self, env:OperatingEnvironment):
 		print(self.logstr)
+		return True
 	def serialize(self):
 		return f"LOGSTR {self.logstr}"
+
+#-------------------------------------------------------------------------------
+class Action_DecodeInt64(AbstractAction):
+	"""Decode `env.data_int64` using Decoder_Int64 (pattern match)"""
+	def __init__(self, decoder_id):
+		self.decoder_id = decoder_id
+	def run(self, env:OperatingEnvironment):
+		#env.log_info(f"Decoding with {self.decoder_id}")
+		data = env.data_int64
+		decoder = env.decoders_int64.get(self.decoder_id, None)
+		if decoder is None:
+			env.log_error(f"Decoder not found: {self.decoder_id}")
+			return False #Fail
+		action = decoder.decode(data) #Might be None... and so try
+		if action is None:
+			return False #Fail
+		return action.run(env)
+	def serialize(self):
+		return f"DECODEINT64 {self.decoder_id}"
 
 #-------------------------------------------------------------------------------
 class Action_ExecuteShell(AbstractAction):
@@ -53,6 +77,7 @@ class Action_ExecuteShell(AbstractAction):
 		self.cmd = cmd
 	def run(self, env:OperatingEnvironment):
 		system(self.cmd)
+		return True
 	def serialize(self):
 		return f"EXECSHELL {self.cmd}"
 
@@ -62,7 +87,7 @@ class Action_ExecuteCustomPy(AbstractAction):
 	def __init__(self, fnid):
 		self.fnid = fnid
 	def run(self, env:OperatingEnvironment):
-		return #TODO
+		return True #TODO
 	def serialize(self):
 		return f"EXECPY {self.fnid}"
 
@@ -74,8 +99,10 @@ class Action_ExecuteSequence(AbstractAction):
 		self.action_list = action_list #::AbstractAction[]
 
 	def run(self, env:OperatingEnvironment):
+		success = True
 		for action in self.action_list:
-			action.run(env)
+			success &= action.run(env)
+		return success
 
 	def serialize(self):
 		return f"EXECSEQ {self.id}"
