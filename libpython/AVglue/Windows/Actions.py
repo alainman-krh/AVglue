@@ -50,33 +50,45 @@ class Action_VolumeSet(AbstractAction):
 		return f"VOLSET {self.chanid} {self.level_dB}"
 
 #-------------------------------------------------------------------------------
-class Action_VolumeUp(AbstractAction):
+class Action_VolumeUpDown(AbstractAction):
 	"""Step up channel volume"""
-	def __init__(self, chanid):
+	def __init__(self, chanid, delta):
 		self.chanid = chanid
+		self.delta = delta
 	def run(self, env:OperatingEnvironment):
 		if "MASTER" == self.chanid:
 			volume:IAudioEndpointVolume = env.state["WINAUDIO:VOLUME"]
-			volume.VolumeStepUp(None)
+			setfn = (volume.VolumeStepUp if self.delta >= 0 else volume.VolumeStepDown)
+			N = abs(self.delta)
+			for i in range(N):
+				setfn(None)
 		else:
 			env.log_info(f"Channel ID not supported: {self.chanid}")
 			return False #Fail
 		return True
 	def serialize(self):
-		return f"VOLUP {self.chanid}"
+		return f"VOLUPDN {self.chanid}"
 
 #-------------------------------------------------------------------------------
-class Action_VolumeDn(AbstractAction):
-	"""Step down channel volume"""
-	def __init__(self, chanid):
+class Action_VolumeMute(AbstractAction):
+	"""Mute channel volume"""
+	def __init__(self, chanid, op=-1):
+		"""- op: 1 (mute), 0 (unmute), -1 (toggle)"""
 		self.chanid = chanid
+		self.op = op #operation
 	def run(self, env:OperatingEnvironment):
 		if "MASTER" == self.chanid:
+			mute_bool = (False, True)
+			#TODO: Figure out toggling
 			volume:IAudioEndpointVolume = env.state["WINAUDIO:VOLUME"]
-			volume.VolumeStepDown(None)
+			if self.op != -1:
+				#Throws error if value out of range
+				volume.SetMute(mute_bool[self.op], None)
+			else:
+				volume.SetMute(True, None) #Let's mute now instead of toggling
 		else:
 			env.log_info(f"Channel ID not supported: {self.chanid}")
 			return False #Fail
 		return True
 	def serialize(self):
-		return f"VOLDN {self.chanid}"
+		return f"VOLMUTE {self.chanid}"

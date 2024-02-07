@@ -11,7 +11,7 @@ Env_InitializeAudio(env)
 
 traps_main = SignalTraps({
 	"mute": Action_LogString("mute trapped!"),
-    "IR": Action_DecodeInt64("NetStreamz:IRdecode") #Decoding is optional
+	"IR": Action_DecodeInt64("NetStreamz:IRdecode") #Decoding is optional
 })
 env.mode_add("LivingroomMain", [traps_main])
 env.mode_setactive("LivingroomMain")
@@ -32,7 +32,7 @@ act_calcopen = Action_ExecuteShell("calc.exe")
 #==More complex test
 #===============================================================================
 #Will be stored in "PCTAXES" subdirectory (traps/actions tax-related activities)
-act_calctest = Action_ExecuteSequence("PCTAXES:CALCTEST", [
+act_calctest = Action_ExecuteSequence("DEPRECATEIDFIELD?", [
 	Action_ExecuteShell("calc.exe"),
 	Action_Wait(0.5),
 	#Action_SendKeys(0, "3{+}14{ENTER}"),
@@ -40,11 +40,11 @@ act_calctest = Action_ExecuteSequence("PCTAXES:CALCTEST", [
 ])
 success = act_calctest.run(env)
 
-act_mediatest = Action_ExecuteSequence("PCTUBE:MEDIATEST", [
+act_mediatest = Action_ExecuteSequence("DEPRECATEIDFIELD?", [
 	Action_TriggerLocal(Signal("mute")),
 	Action_TriggerLocal(Signal("muteX")),
 	Action_TriggerLocal(Signal("mute")),
-    Action_TriggerLocal(Signal("IR")),
+	Action_TriggerLocal(Signal("IR")),
 	Action_TriggerLocal(Signal("IR"), data_int64=0xABCD123), #Not obvious what data is - will get decoded
 	Action_TriggerLocal(Signal("IR"), data_int64=0xABCD124), #Not obvious what data is - will get decoded
 	Action_TriggerLocal(Signal("IR"), data_int64=0xABCE123), #Not obvious what data is - will get decoded
@@ -52,8 +52,8 @@ act_mediatest = Action_ExecuteSequence("PCTUBE:MEDIATEST", [
 	Action_VolumeSet("MASTER", -20),
 	Action_Wait(0.5),
 	Action_VolumeSet("MASTER", 0),
-	Action_VolumeUp("MASTER"),
-    Action_VolumeDn("MASTER"),
-    Action_LogString("COMPLETE!"),
+	Action_VolumeUpDown("MASTER", -20), #Volume down
+	Action_VolumeUpDown("MASTER", 1), #Volume up
+	Action_LogString("COMPLETE!"),
 ])
 success = act_mediatest.run(env)

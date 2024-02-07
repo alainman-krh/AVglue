@@ -72,6 +72,7 @@ class OperatingEnvironment():
 	"""Will typically have only one. Cleaner than global variables."""
 	def __init__(self):
 		self.modes = {}
+		self.actions = {}
 		self.mode_add("OFF", tuple())
 		self.mode_setactive("OFF")
 		self.state={} #Actions can store data here
@@ -90,6 +91,9 @@ class OperatingEnvironment():
 	def mode_setactive(self, id):
 		self.mode_activeid = id
 		self.mode_activestack = self.modes[id] #Keep it cached (avoid constant lookup)
+
+	def actions_add(self, id, action):
+		self.actions[id] = action #:AbstractAction
 
 	def decoders_add(self, id, decoder:Decoder_Int64):
 		#Assumes always Int64 for the time being.
