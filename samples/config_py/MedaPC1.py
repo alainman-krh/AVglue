@@ -13,10 +13,10 @@ Env_InitializeAudio(env)
 traps_main = SignalTraps({
 	"VOLMUTE": Action_VolumeMute("MASTER"),
     "IR": Action_DecodeInt64("MEDIAPC:IRdecode"), #TODO: Get some example
-    "VOLBTN": Action_DecodeInt64("MEDIAPC:VolumeDecode"),
+    "VOLBTN": Action_DecodeInt64("MEDIAPC:VolumeDecode"), #Not necessarily generate from IR signal
 })
-env.mode_add("LivingroomMain", [traps_main])
-env.mode_setactive("LivingroomMain")
+env.mode_add("default", [traps_main])
+env.mode_setactive("default")
 
 
 #==Decode IR signals

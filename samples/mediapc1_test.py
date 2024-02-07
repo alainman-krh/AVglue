@@ -1,4 +1,5 @@
-#from . import config_py.MedaPC1 as MediaPC1
+#samples/mediapc1_test.py
+#-------------------------------------------------------------------------------
 from config_py import MedaPC1 #Assume current folder is in path
 from AVglue.Actions import *
 from AVglue.Windows.Actions import *
