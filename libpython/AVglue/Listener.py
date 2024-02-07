@@ -16,9 +16,10 @@ class AbstractWorker(metaclass=ABCMeta):
 	pass
 
 class SignalListener(AbstractWorker):
-	def __init__(self, client:socket.socket):
+	def __init__(self, verbose=False):
 		super().__init__()
 		self.rxbuf = SocketMessageReceiver()
+		self.verbose = verbose
 
 	def message_process(self, env:OperatingEnvironment, msg:str):
 		tokens = msg.split()
@@ -34,7 +35,10 @@ class SignalListener(AbstractWorker):
 			else:
 				data = int(dstr)
 
+		id = tokens[0]
 		act = Action_TriggerLocal(Signal(id), data_int64=data)
+		if self.verbose:
+			env.log_info(f"Running action: {act.serialize()}.")
 		act.run(env)
 
 	def run(self, env:OperatingEnvironment, client:socket.socket):
@@ -52,17 +56,18 @@ class SocketListener():
 		self.env = env
 		self.port = port
 
-	def start(self):
+	def start(self, verbose=False):
 		lsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		#host = socket.gethostname()
 		host = "127.0.0.1"
 		lsock.bind((host, self.port))
-		self.env.log_info(f"Listening on {host}:{self.port}.")
+		self.env.log_info(f"Listening for connections to {host}:{self.port}.")
 
 		lsock.listen(1) #1 connection at a time
 		while True:
 			(client, addr) = lsock.accept()
 			print(addr)
 			with client:
-				worker = SignalListener()
+				worker = SignalListener(verbose=verbose)
 				worker.run(self.env, client)
+			break
