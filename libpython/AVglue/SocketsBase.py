@@ -1,4 +1,4 @@
-#AVglue/Listener.py
+#AVglue/SocketsBase.py
 #-------------------------------------------------------------------------------
 import socket
 

@@ -1,9 +1,13 @@
 #samples/mediapc1_listener.py
 #-------------------------------------------------------------------------------
 from config_py import MedaPC1 #Assume current folder is in path
-from AVglue.Listener import SocketListener
+from AVglue.SocketSignals import ConnectionManager
 
-slist = SocketListener(MedaPC1.env)
+r"""IMPORTANT
+PLEASE RUN IN A SEPARATE THREAD (using `./1-launch_listener.py`)
+"""
+
+slist = ConnectionManager(MedaPC1.env)
 slist.start(verbose=True)
 
 print("Done")

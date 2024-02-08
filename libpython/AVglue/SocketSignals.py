@@ -1,4 +1,4 @@
-#AVglue/Listener.py
+#AVglue/SocketSignals.py
 #-------------------------------------------------------------------------------
 from .Base import OperatingEnvironment, Signal
 from .Actions import Action_TriggerLocal
@@ -6,7 +6,7 @@ from .SocketsBase import SocketMessageReceiver
 from abc import ABCMeta, abstractmethod
 import socket
 
-DFLT_PORT_LISTENER = 50042
+DFLT_PORT_CONNECTIONMGR = 50042
 
 
 #==Worker class
@@ -51,23 +51,24 @@ class SignalListener(AbstractWorker):
 
 #==Worker class
 #===============================================================================
-class SocketListener():
-	def __init__(self, env, port=DFLT_PORT_LISTENER):
+class ConnectionManager():
+	def __init__(self, env, port=DFLT_PORT_CONNECTIONMGR):
 		self.env = env
-		self.port = port
 
-	def start(self, verbose=False):
+	def start(self, port=DFLT_PORT_CONNECTIONMGR, verbose=False):
+		#Listener socket
 		lsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		#host = socket.gethostname()
 		host = "127.0.0.1"
-		lsock.bind((host, self.port))
-		self.env.log_info(f"Listening for connections to {host}:{self.port}.")
+		lsock.bind((host, port))
+		self.env.log_info(f"Listening for connections to {host}:{port}.")
 
-		lsock.listen(1) #1 connection at a time
 		while True:
+			lsock.listen(1) #1 connection at a time
+
 			(client, addr) = lsock.accept()
-			print(addr)
+			self.env.log_info(f"New connection: {addr}.")
 			with client:
 				worker = SignalListener(verbose=verbose)
 				worker.run(self.env, client)
-			break
+			#break #Make self available for new connections

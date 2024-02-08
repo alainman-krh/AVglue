@@ -1,13 +1,13 @@
 #samples/signalgen/signal_send.py
 #-------------------------------------------------------------------------------
 #NOTE: Launch from spearate command window with python environment ready
-from AVglue.Listener import DFLT_PORT_LISTENER
+from AVglue.SocketSignals import DFLT_PORT_CONNECTIONMGR
 import socket
 from time import sleep
 
 #Assume this is where listener is:
 host = "127.0.0.1"
-port = DFLT_PORT_LISTENER
+port = DFLT_PORT_CONNECTIONMGR
 #port = 50043 #Try a different port
 msg = "VOLMUTE"
 
