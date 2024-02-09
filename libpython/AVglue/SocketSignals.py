@@ -9,10 +9,17 @@ import socket
 DFLT_PORT_CONNECTIONMGR = 50042
 
 
-#==Worker class
+#==Exeptions
+#===============================================================================
+class TerminationRequest(Exception):
+	"""TODO: Implement? Not sure this is required. Intent: Detect a `Signal("TERM")` - or something and throw exception/exit"""
+	pass
+
+
+#==Worker classes (listener/server side)
 #===============================================================================
 class AbstractWorker(metaclass=ABCMeta):
-	"""Mostly used to identify class"""
+	"""Mostly used to identify class as a worker (listener/server side)"""
 	pass
 
 class SignalListener(AbstractWorker):
@@ -52,6 +59,7 @@ class SignalListener(AbstractWorker):
 #==Worker class
 #===============================================================================
 class ConnectionManager():
+	"""Listener (Server) side."""
 	def __init__(self, env, port=DFLT_PORT_CONNECTIONMGR):
 		self.env = env
 
