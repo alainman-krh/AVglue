@@ -14,7 +14,7 @@ ROOTDIR_AVGLUE = abspath(joinpath(_THIS_DIR, "..", ".."))
 LIBDIR_AVGLUE = joinpath(ROOTDIR_AVGLUE, "libpython")
 LAUNCHSCRIPT_VBSWRAP = joinpath(_THIS_DIR, cmd_name + ".vbs") #.vbs wrapper
 LAUNCHSCRIPT_PYTHON = joinpath(_THIS_DIR, cmd_name + ".py") #Actual script
-PYTHONCMD = joinpath(dirname(_THIS_PYTHON), "pythonw.exe") #Use pythonw. Doesn't use console as much
+PYTHONCMD = joinpath(dirname(_THIS_PYTHON), "pythonw.exe") #Use pythonw. Doesn't use console mode
 #PYTHONCMD = _THIS_PYTHON
 
 launch_script = f"""'{cmd_name}.vbs

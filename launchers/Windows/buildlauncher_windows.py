@@ -5,19 +5,28 @@ from os.path import basename, dirname, abspath
 import sys
 _THIS_FILE = abspath(__file__)
 _THIS_DIR = dirname(_THIS_FILE)
-
-#Add ../libpython to PYTHONPATH - and execute python version used to run this code right here:
-_THIS_LIBDIR = abspath(joinpath(_THIS_DIR, "..", "libpython"))
-_THIS_LAUNCHSCRIPT = abspath(joinpath(_THIS_DIR, "..", "samples", "usage_basic.py"))
 _THIS_PYTHON = sys.executable
 
-launch_script = f"""'AVglue launcher
+cmd_name = "usage_basic"
+
+#Add ../libpython to PYTHONPATH - and execute python version used to run this code right here:
+ROOTDIR_AVGLUE = abspath(joinpath(_THIS_DIR, "..", ".."))
+LIBDIR_AVGLUE = joinpath(ROOTDIR_AVGLUE, "libpython")
+LAUNCHSCRIPT_VBSWRAP = joinpath(_THIS_DIR, cmd_name + ".vbs") #.vbs wrapper
+LAUNCHSCRIPT_PYTHON = joinpath(ROOTDIR_AVGLUE, "samples", cmd_name + ".py") #Actual script
+PYTHONCMD = joinpath(dirname(_THIS_PYTHON), "pythonw.exe") #Use pythonw. Doesn't use console mode
+#PYTHONCMD = _THIS_PYTHON
+
+
+launch_script = f"""''{cmd_name}.vbs
 Set shell = CreateObject("WScript.shell")
 Set sysenv = shell.Environment("Process")
-sysenv("PYTHONPATH") = "{_THIS_LIBDIR}"
+sysenv("PYTHONPATH") = "{LIBDIR_AVGLUE}"
 
-shell.Run "{_THIS_PYTHON} {_THIS_LAUNCHSCRIPT}"
+cmd = "{PYTHONCMD} {LAUNCHSCRIPT_PYTHON}"
+'WScript.Echo cmd
+shell.Run cmd
 """
 
-with open("AVglue.vbs", "w") as io:
+with open(LAUNCHSCRIPT_VBSWRAP, "w") as io:
     print(launch_script, file=io)
