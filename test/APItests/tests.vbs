@@ -6,6 +6,8 @@ Set shell = CreateObject("WScript.shell")
 'shell.Run "calc.exe"
 'WScript.Quit
 
+WScript.Echo WScript.ScriptFullName
+
 'Native VBS (not WSH):
 MsgBox "hello world (from vb)"
 
