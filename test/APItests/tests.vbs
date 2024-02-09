@@ -8,3 +8,12 @@ Set shell = CreateObject("WScript.shell")
 
 'Native VBS (not WSH):
 MsgBox "hello world (from vb)"
+
+cmd = "calc.exe"
+WScript.Echo cmd
+shell.Run cmd
+
+'NOTE: `StdIn.ReadLine` only works if you run `cscript THISFILE.vbs`. Won't work from `wscript` interpreter.
+WScript.StdOut.WriteLine "Press ENTER to continue..."
+WScript.StdIn.ReadLine 'Pause before closing
+WScript.StdOut.WriteLine "done"
