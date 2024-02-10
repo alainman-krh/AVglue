@@ -40,23 +40,34 @@ for id in ("mute", "un-mute", "toggle mute"):
 
 #==Connect click event handlers
 #===============================================================================
-#Shorhand to trigger actions:
-def _send_signal(env, signame, data=None):
-	act = Action_TriggerLocal(Signal(signame), data_int64=data)
-	act.run(env)
-#Action_TriggerLocal(Signal("VOLMUTE")),
+#Convenience 
+def _handler_setaction(btn:tk.Button, action:AbstractAction, env):
+	#NOTE: lambda uses variables with local scope here - so we know that
+	#whatever arguments are passed to this function will exist only for this
+	#one event handler.
+	btn.configure(command=lambda : action.run(env))
 
-env = MediaPC1.env #Alias
+def _handler_setsignal(btn:tk.Button, signame, env, data_int64=None):
+	action = Action_TriggerLocal(Signal(signame), data_int64=data_int64)
+	btn.configure(command=lambda : action.run(env))
+
+#Alias to OperatingEnvironment:
+env = MediaPC1.env
+
+#Trigger actions by sending signals (Op-Env decides how to trap/react to signals):
 for i in range(10): #0-9
 	btn_i:tk.Button = btn[i]
-	#IMPORTANT: Lambda needs to get default _i=i... otherwise all buttons access same "i":
-	btn_i.configure(command=lambda _env=env, _i=i : _send_signal(_env, "VOLBTN", _i))
+	_handler_setsignal(btn_i, "VOLBTN", env, data_int64=i)
 
-btn["VOL-"].configure(command=lambda _env=env: _send_signal(_env, "VOL-"))
-btn["VOL+"].configure(command=lambda _env=env: _send_signal(_env, "VOL+"))
-btn["mute"].configure(command=lambda _env=env: _send_signal(_env, "VOLMUTE"))
-btn["un-mute"].configure(command=lambda _env=env: _send_signal(_env, "VOLUNMUTE"))
-btn["toggle mute"].configure(command=lambda _env=env: _send_signal(_env, "VOLMUTE-TOGGLE"))
+#Maybe the signal traps prefer to jump up/down by 1, 2, 3 steps... who knows?:
+_handler_setsignal(btn["VOL-"], "VOL-", env)
+_handler_setsignal(btn["VOL+"], "VOL+", env)
+
+#Directly perform actions (don't trigger a signal that needs to be trapped):
+#NOTE: By sending signals, environment could be configured with traps that reduce volume (instead of actually muting).
+_handler_setaction(btn["mute"], Action_VolumeMute("MASTER", 1), env)
+_handler_setaction(btn["un-mute"], Action_VolumeMute("MASTER", 0), env)
+_handler_setaction(btn["toggle mute"], Action_VolumeMute("MASTER"), env)
 
 
 #==Show/start application

@@ -10,8 +10,6 @@ import sys
 def add_module_direct(modulepath, register=True):
 	modulepath = abspath(modulepath)
 	modulename = splitext(basename(modulepath))[0]
-	print(modulename)
-	print(modulepath)
 	spec = importutil.spec_from_file_location(modulename, modulepath)
 	module = importutil.module_from_spec(spec)
 	spec.loader.exec_module(module)
