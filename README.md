@@ -18,7 +18,8 @@ To make the `AVglue` library to be available to your own application, you must a
 - ...
 
 The following libs are required to use `AVglue` (and likely not installed):
-- (Windows): `comtypes`, `pycaw`
+- (Windows-Media bindings): `comtypes`, `pycaw`
+- (Windows-GUI bindings): `tk`
 
 Python libraries can be installed 
 
