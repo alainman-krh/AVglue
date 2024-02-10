@@ -1,4 +1,4 @@
-#AVglue/launcher/Windows/AVglue_send.py
+#AVglue_send.py (Windows applet)
 #-------------------------------------------------------------------------------
 #NOTE: Need to setup PYTHONPATH and use python.exe from correct environment.
 from AVglue.SocketSignals import DFLT_PORT_CONNECTIONMGR

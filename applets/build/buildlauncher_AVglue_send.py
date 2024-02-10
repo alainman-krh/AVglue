@@ -1,4 +1,4 @@
-#AVglue/launcher/Windows/buildlauncher_AVglue_send.py
+#AVglue/applets/build/buildlauncher_AVglue_send.py
 #-------------------------------------------------------------------------------
 from os.path import join as joinpath
 from os.path import basename, dirname, abspath
