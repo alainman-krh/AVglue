@@ -1,5 +1,11 @@
 ## Overview of `AVglue/samples/`
 
+# Using Samples
+In order to use samples in this directory, please ensure:
+- to add `[AVglue_PKGDIR]/libpython` to `PYTHONPATH`,
+- to use a python environment (suggest: `venv`) that has all require packages
+  (`pip install [PACKAGE NAMES]`)
+
 # Media PC test: Direct/No listener
 <!----------------------------------------------------------------------------->
 `mediapc1_test.py` is a simple python application that interacts with the
