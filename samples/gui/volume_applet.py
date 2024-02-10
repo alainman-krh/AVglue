@@ -9,10 +9,9 @@ import tkinter as tk
 appwnd = tk.Tk()  # create parent window
 btn = {}
 
+NROWS = 4
 frame_rows = [
-	tk.Frame(appwnd),
-	tk.Frame(appwnd),
-	tk.Frame(appwnd),
+	tk.Frame(appwnd) for i in range(NROWS)
 ]
 for f in frame_rows:
 	f.pack(fill="y") #Add elements from left-to-right
@@ -29,6 +28,11 @@ for i in (*range(1, 10), 0): #Want 0 last
 		fref = frame_rows[1]
 
 fref = frame_rows[2]
+for id in ("VOL-", "VOL+"):
+	btn[id] = tk.Button(fref, text=id)
+	btn[id].pack(side="left", fill="y")
+
+fref = frame_rows[3]
 for id in ("mute", "un-mute", "toggle mute"):
 	btn[id] = tk.Button(fref, text=id)
 	btn[id].pack(side="left", fill="y")
@@ -37,15 +41,22 @@ for id in ("mute", "un-mute", "toggle mute"):
 #==Connect click event handlers
 #===============================================================================
 #Shorhand to trigger actions:
-def _send_signal(signame, data=None):
+def _send_signal(env, signame, data=None):
 	act = Action_TriggerLocal(Signal(signame), data_int64=data)
-	act.run(MediaPC1.env)
+	act.run(env)
 #Action_TriggerLocal(Signal("VOLMUTE")),
 
+env = MediaPC1.env #Alias
 for i in range(10): #0-9
 	btn_i:tk.Button = btn[i]
 	#IMPORTANT: Lambda needs to get default _i=i... otherwise all buttons access same "i":
-	btn_i.configure(command=lambda _i=i : _send_signal("VOLBTN", _i))
+	btn_i.configure(command=lambda _env=env, _i=i : _send_signal(_env, "VOLBTN", _i))
+
+btn["VOL-"].configure(command=lambda _env=env: _send_signal(_env, "VOL-"))
+btn["VOL+"].configure(command=lambda _env=env: _send_signal(_env, "VOL+"))
+btn["mute"].configure(command=lambda _env=env: _send_signal(_env, "VOLMUTE"))
+btn["un-mute"].configure(command=lambda _env=env: _send_signal(_env, "VOLUNMUTE"))
+btn["toggle mute"].configure(command=lambda _env=env: _send_signal(_env, "VOLMUTE-TOGGLE"))
 
 
 #==Show/start application

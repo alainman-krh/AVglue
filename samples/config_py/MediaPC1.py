@@ -11,7 +11,11 @@ Env_InitializeAudio(env)
 #==Signal traps
 #===============================================================================
 traps_main = SignalTraps({
-	"VOLMUTE": Action_VolumeMute("MASTER"),
+	"VOLMUTE": Action_VolumeMute("MASTER", 1),
+	"VOLUNMUTE": Action_VolumeMute("MASTER", 0),
+	"VOLMUTE-TOGGLE": Action_VolumeMute("MASTER"),
+	"VOL+": Action_VolumeUpDown("MASTER", 1),
+	"VOL-": Action_VolumeUpDown("MASTER", -1),
     "IR": Action_DecodeInt64("MEDIAPC:IRdecode"), #TODO: Get some example
     "VOLBTN": Action_DecodeInt64("MEDIAPC:VolumeDecode"), #Not necessarily generate from IR signal
 })

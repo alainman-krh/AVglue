@@ -85,7 +85,8 @@ class Action_VolumeMute(AbstractAction):
 				#Throws error if value out of range
 				volume.SetMute(mute_bool[self.op], None)
 			else:
-				volume.SetMute(True, None) #Let's mute now instead of toggling
+				ismute = (volume.GetMute() != 0)
+				volume.SetMute(not ismute, None) #Let's mute now instead of toggling
 		else:
 			env.log_info(f"Channel ID not supported: {self.chanid}")
 			return False #Fail
