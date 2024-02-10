@@ -1,12 +1,14 @@
-'launchers\Windows\runme_sampleusage.vbs
+'samples\mediapc1_scripting_with_AVglue_send.vbs
 Set shell = CreateObject("WScript.Shell")
 Set FS = CreateObject("Scripting.FileSystemObject")
 THIS_DIR = FS.GetParentFolderName(WScript.ScriptFullName)
 WScript.Echo "Make sure listener (server) process is running"
 
-'Sample script that uses launchers\Windows\AVglue_send.vbs to send signals:
+'Sample script that uses applets\Windows\AVglue_send.vbs to send signals:
 '(Mimicks what you can get by launching script with keyboard mapping programs)
-scriptname = "AVglue_send.vbs" 'Assume in path
+scriptname = "AVglue_send.vbs"
+cmdbase = THIS_DIR & "\..\applets\Windows\" & scriptname
+'Some commands to send
 sigarray = Array(_
 	"VOLMUTE 0",_
 	"a b c d",_
@@ -16,7 +18,6 @@ sigarray = Array(_
 	"VOLMUTE"_
 )
 
-cmdbase = THIS_DIR & "\..\launchers\Windows\" & scriptname
 For Each sig In sigarray
 	shell.Run cmdbase & " " & sig
 Next
