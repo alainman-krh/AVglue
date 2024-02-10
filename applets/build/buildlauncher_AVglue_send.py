@@ -12,8 +12,9 @@ cmd_name = "AVglue_send"
 #Add ../libpython to PYTHONPATH - and execute python version used to run this code right here:
 ROOTDIR_AVGLUE = abspath(joinpath(_THIS_DIR, "..", ".."))
 LIBDIR_AVGLUE = joinpath(ROOTDIR_AVGLUE, "libpython")
-LAUNCHSCRIPT_VBSWRAP = joinpath(_THIS_DIR, cmd_name + ".vbs") #.vbs wrapper
-LAUNCHSCRIPT_PYTHON = joinpath(_THIS_DIR, cmd_name + ".py") #Actual script
+APPLETDIR = joinpath(ROOTDIR_AVGLUE, "applets", "Windows")
+LAUNCHSCRIPT_VBSWRAP = joinpath(APPLETDIR, cmd_name + ".vbs") #.vbs wrapper
+LAUNCHSCRIPT_PYTHON = joinpath(APPLETDIR, "src", cmd_name + ".py") #Actual script
 PYTHONCMD = joinpath(dirname(_THIS_PYTHON), "pythonw.exe") #Use pythonw. Doesn't use console mode
 #PYTHONCMD = _THIS_PYTHON
 

@@ -1,0 +1,4 @@
+#Auto-generated:
+*.vbs
+#Example on how to reactivate for subfolders:
+#!src/*.vbs
