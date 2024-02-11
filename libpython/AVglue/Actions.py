@@ -84,10 +84,13 @@ class Action_ExecuteShell(AbstractAction):
 #-------------------------------------------------------------------------------
 class Action_ExecuteCustomPy(AbstractAction):
 	"""Execute custom python function (by name/function id)"""
-	def __init__(self, fnid):
+	def __init__(self, fn, fnid=None):
+		self.fn = fn
+		if fnid is None:
+			fnid = fn.__name__
 		self.fnid = fnid
 	def run(self, env:OperatingEnvironment):
-		return True #TODO
+		return self.fn()
 	def serialize(self):
 		return f"EXECPY {self.fnid}"
 

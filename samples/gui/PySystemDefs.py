@@ -9,3 +9,4 @@ IMPORTDIR = joinpath(_THIS_DIR, "..", "PySystemDefs")
 
 #Provide module references:
 MediaPC1 = add_module_direct(joinpath(IMPORTDIR, "MediaPC1.py"), register=False)
+WindowsWithMacros = add_module_direct(joinpath(IMPORTDIR, "WindowsWithMacros.py"), register=False)
