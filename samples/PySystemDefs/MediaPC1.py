@@ -3,7 +3,6 @@ from AVglue.Actions import *
 from AVglue.Windows.Actions import *
 from AVglue.Windows.Media import Env_InitializeAudio
 
-
 env = OperatingEnvironment()
 Env_InitializeAudio(env)
 

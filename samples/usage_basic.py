@@ -5,12 +5,11 @@ from AVglue.Actions import *
 from AVglue.Windows.Actions import *
 from AVglue.Windows.Media import Env_InitializeAudio
 
-
-#==Signals and traps
-#===============================================================================
 env = OperatingEnvironment()
 Env_InitializeAudio(env)
 
+#==Signals and traps
+#===============================================================================
 traps_main = SignalTraps({
 	"mute": Action_LogString("mute trapped!"),
 	"IR": Action_DecodeInt64("NetStreamz:IRdecode") #Decoding is optional

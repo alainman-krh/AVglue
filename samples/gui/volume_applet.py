@@ -9,15 +9,15 @@ import tkinter as tk
 #===============================================================================
 class VolumeScrubber:
 	"""Wrapper class to handle complexity of tk.Scrollbar"""
-	def __init__(self, parent, env, vol_init=-100):
+	def __init__(self, parent, env):
 		self.w = tk.Scrollbar(parent, orient="horizontal")
 		self.env = env
 		self.wbox = 0.2 #With of scrollbox
 		self.w.pack(fill="x")
 		self.valrange = (-30.0, 0.0) #dB (float)
-		self.val_set(vol_init)
 		self._scrubhandler_set()
 		self.pagestep = 3.0 #dB (float)
+		self.refresh()
 
 	def _pos_update(self, newpos):
 		self.w.set(newpos, newpos+self.wbox)
@@ -74,7 +74,7 @@ class VolumeScrubber:
 env = MediaPC1.env
 
 appwnd = tk.Tk()  # create parent window
-appwnd.title = "Volume control"
+appwnd.title("Volume control")
 btn = {}
 
 #First row: volume scrollbar
@@ -118,9 +118,8 @@ for id in ("mute", "un-mute", "toggle mute"):
 #===============================================================================
 def volume_runaction(btn:tk.Button, action:AbstractAction, env):
 	action.run(env)
-	volscrub.refresh()
+	volscrub.refresh() #Don't forget to refresh GUI when you run an action!
 
-#Convenience functions
 def volumebtn_sethandler(btn:tk.Button, action:AbstractAction, env):
 	#NOTE: lambda uses variables with local scope here - so we know that
 	#whatever arguments are passed to this function will exist only for this
