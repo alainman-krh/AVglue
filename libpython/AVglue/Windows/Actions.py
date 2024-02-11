@@ -38,6 +38,10 @@ class Action_VolumeSet(AbstractAction):
 	def __init__(self, chanid, level_dB):
 		self.chanid = chanid
 		self.level_dB = level_dB
+		range_valid = (-96, 0)
+		if not (range_valid[0] <= level_dB <= range_valid[1]):
+			#Seems to be limits of API:
+			raise Exception(f"Volume out of range: {level_dB} (limits: {range_valid})")
 	def run(self, env:OperatingEnvironment):
 		if "MASTER" == self.chanid:
 			volume:IAudioEndpointVolume = env.state["WINAUDIO:VOLUME"]
