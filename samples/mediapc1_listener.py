@@ -1,6 +1,6 @@
 #samples/mediapc1_listener.py
 #-------------------------------------------------------------------------------
-from config_py import MediaPC1 #Assume current folder is in path
+from PySystemDefs import MediaPC1 #Assume current folder is in path
 from AVglue.SocketSignals import ConnectionManager
 
 r"""IMPORTANT

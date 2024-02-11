@@ -1,7 +1,7 @@
 from AVglue.Windows.Actions import *
 from AVglue.Actions import *
 from AVglue.PythonTools import clamp2range
-from config_py import MediaPC1
+from PySystemDefs import MediaPC1
 import tkinter as tk
 
 

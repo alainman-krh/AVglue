@@ -1,6 +1,6 @@
 #samples/mediapc1_test.py
 #-------------------------------------------------------------------------------
-from config_py import MediaPC1 #Assume current folder is in path
+from PySystemDefs import MediaPC1 #Assume current folder is in path
 from AVglue.Actions import *
 from AVglue.Windows.Actions import *
 
