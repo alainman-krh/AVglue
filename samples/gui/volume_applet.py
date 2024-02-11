@@ -90,14 +90,15 @@ frame_rows = [
 	tk.Frame(appwnd) for i in range(NROWS)
 ]
 for f in frame_rows:
-	f.pack(fill="y") #Add elements from left-to-right
+	f.pack()
 
 #Add mode buttons
 #-------------------------------------------------------------------------------
 fref = frame_rows[0]
+frame_rows[0].pack(fill="both", expand=True)
 for id in ("mode: volumectrl", "mode: notepad"):
 	btn[id] = tk.Button(fref, text=id)
-	btn[id].pack(side="left", fill="y")
+	btn[id].pack(side="left", fill="both", expand=True)
 
 #Add numbered buttons (volume presets)
 #-------------------------------------------------------------------------------
