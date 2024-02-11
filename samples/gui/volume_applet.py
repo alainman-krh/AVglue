@@ -1,3 +1,5 @@
+#samples/gui/volume_applet.py
+#-------------------------------------------------------------------------------
 from AVglue.Windows.Actions import *
 from AVglue.Actions import *
 from AVglue.PythonTools import clamp2range
@@ -121,60 +123,63 @@ for id in ("mute", "un-mute", "toggle mute"):
 	btn[id].pack(side="left", fill="y")
 
 
-#==Normal button click handlers
-#===============================================================================
-def btn_sethandler(btn:tk.Button, action:AbstractAction, env):
-	#NOTE: lambda uses variables with local scope here - so we know that
-	#whatever arguments are passed to this function will exist only for this
-	#one event handler/lambda function.
-	btn.configure(command=lambda : action.run(env))
-
-def btn_sethandler_sig(btn:tk.Button, signame, env, data_int64=None):
-	#Handler is specifically to trigger a signal (and update scurbber)
-	action = Action_TriggerLocal(Signal(signame), data_int64=data_int64)
-	btn.configure(command=lambda : action.run(env))
-
-
-#==Volume button click handlers (refresh volume scrubber)
-#===============================================================================
-def volume_runaction(btn:tk.Button, action:AbstractAction, env):
-	action.run(env)
-	volscrub.refresh() #Don't forget to refresh GUI when you run an action!
-
-def volumebtn_sethandler(btn:tk.Button, action:AbstractAction, env):
-	#NOTE: lambda uses variables with local scope here - so we know that
-	#whatever arguments are passed to this function will exist only for this
-	#one event handler/lambda function.
-	btn.configure(command=lambda : volume_runaction(btn, action, env))
-
-def volumebtn_sethandler_sig(btn:tk.Button, signame, env, data_int64=None):
-	#Handler is specifically to trigger a signal (and update scurbber)
-	action = Action_TriggerLocal(Signal(signame), data_int64=data_int64)
-	btn.configure(command=lambda : volume_runaction(btn, action, env))
-
-
 #==Connect appropriate event handlers
 #===============================================================================
+from TKglue.EventHandling import wgt_sethandler
 
-#Trigger actions by sending signals (Op-Env decides how to trap/react to signals):
+#Mode select
 #-------------------------------------------------------------------------------
-volumebtn_sethandler_sig(btn["mode: volumectrl"], "MODEVOL", env)
-volumebtn_sethandler_sig(btn["mode: notepad"], "MODENOTEPAD", env)
+def EHmodesel_click(btn:tk.Button, env):
+	if "notepad" in btn["text"]:
+		success = Action_TriggerLocal(Signal("MODENOTEPAD")).run(env)
+		if not success: #TODO: Won't work because can't yet detect application isn't present.
+			print("Please ensure there is a running copy of notepad with the following")
+			print('window title: "Untitled - Notepad"')
+	else:
+		Action_TriggerLocal(Signal("MODEVOL")).run(env)
+for id in ("mode: volumectrl", "mode: notepad"):
+	wgt_sethandler(btn[id], EHmodesel_click, env)
 
+#Number buttons: Send NUMBTN signals
+#-------------------------------------------------------------------------------
+def EHnumbuttons_click(btn:tk.Button, env):
+	num = int(btn["text"])
+	Action_TriggerLocal(Signal("NUMBTN"), data_int64=num).run(env)
+	volscrub.refresh() #Don't forget to refresh GUI when you run an action!
 for i in range(10): #0-9
-	btn_i:tk.Button = btn[i]
-	volumebtn_sethandler_sig(btn_i, "NUMBTN", env, data_int64=i)
+	wgt_sethandler(btn[i], EHnumbuttons_click, env)
 
-#Maybe user wants the signal traps prefer to jump up/down by 1, 2, 3 steps... who knows?:
-volumebtn_sethandler_sig(btn["VOL-"], "VOL-", env)
-volumebtn_sethandler_sig(btn["VOL+"], "VOL+", env)
-
-#Directly perform actions (don't trigger a signal that first needs to be trapped):
+#"VOL-/+": Send signals instead of running actions directly!
+#(Maybe user wants the signal traps prefer to jump up/down by 1, 2, 3 steps... who knows?)
+#...or maybe user wants volume -/+ to only work in certain modes
 #-------------------------------------------------------------------------------
-#NOTE: By sending signals, environment could be configured with traps that reduce volume (instead of actually muting).
-volumebtn_sethandler(btn["mute"], Action_VolumeMute("MASTER", 1), env)
-volumebtn_sethandler(btn["un-mute"], Action_VolumeMute("MASTER", 0), env)
-volumebtn_sethandler(btn["toggle mute"], Action_VolumeMute("MASTER"), env)
+def EHvolupdn_click(btn:tk.Button, env):
+	sigmap = { #Technically don't need a map here - but useful pattern:
+		"VOL-": Signal("VOL-"),
+		"VOL+": Signal("VOL+"),
+	}
+	signal = sigmap[btn["text"]]
+	success = Action_TriggerLocal(signal).run(env)
+	if not success:
+		print('Switch back to "mode: volumectrl" to trap signals')
+	volscrub.refresh() #Don't forget to refresh GUI when you run an action!
+for id in ("VOL-", "VOL+"):
+	wgt_sethandler(btn[id], EHvolupdn_click, env)
+
+#Mute/un-mute: Directly perform actions (don't trigger a signal that first needs to be trapped):
+#HOWEVER: By sending signals, environment could be configured with traps that reduce volume (instead of actually muting).
+#-------------------------------------------------------------------------------
+def EHvolmute_click(btn:tk.Button, env):
+	muteop = 1 #basic mute
+	lbl = btn["text"]
+	if "un-" in lbl:
+		muteop = 0 #unmute
+	elif "toggle" in lbl:
+		muteop = -1
+	success = Action_VolumeMute("MASTER", muteop).run(env)
+	volscrub.refresh() #Don't forget to refresh GUI when you run an action!
+for id in ("mute", "un-mute", "toggle mute"):
+	wgt_sethandler(btn[id], EHvolmute_click, env)
 
 
 #==Show/start application

@@ -1,3 +1,5 @@
+#samples/PySystemDefs/MediaPC1.py
+#-------------------------------------------------------------------------------
 from AVglue.Base import *
 from AVglue.Actions import *
 from AVglue.Windows.Actions import *
