@@ -44,7 +44,7 @@ where `\n` refers to the new line character.
 <!----------------------------------------------------------------------------->
 The `mediapc1_listener.py` application is an example of AVglue-as-a service.
 The application must first be launched to recieve/act on incomming signals:
-- Run `1-launch_listener.py` to start up listener application in a separate window.
+- Run `1-launch_mediapc1_listener.py` to start up listener application in a separate window.
 
 Once the listener is running, other applications can trigger actions by sending
 signals. The following are examples demonstrating how to send signals from a
