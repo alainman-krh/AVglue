@@ -25,7 +25,8 @@ class Action_SendKeys(AbstractAction):
 			self.shell.AppActivate(self.appname)
 		if self.twait > 0:
 			sleep(self.twait)
-		env.log_info(f"Sending: `{self.seq}`")
+		if env.verbose:
+			env.log_info(f"Sending: `{self.seq}`")
 		self.shell.SendKeys(self.seq)
 		return True #success
 

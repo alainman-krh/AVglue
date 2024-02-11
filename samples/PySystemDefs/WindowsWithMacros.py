@@ -18,22 +18,25 @@ Windows explorer conveniently supports special `shell:` shortcuts to access shel
 NOTE: There was also a resource on `microsoft.com` somewhere... but I can no longer find it.
 """
 
-def SystemState_Suspend():
+def SystemState_Suspend(env):
 	import ctypes
 	ctypes.windll.PowrProf.SetSuspendState(0, 1, 0)
 
 #By having these actions as SignalTraps - external programs/processes/hardware
 #can trigger them by sending signals to this process
 traps_main = SignalTraps({
-    #System:
+	#Apps:
+	"OpenYoutube": Action_ExecuteShell("explorer https://www.youtube.com/"),
+	"OpenCalc": Action_ExecuteShell("calc.exe"),
+	#System:
 	#"SuspendPC": Action_ExecuteShell("rundll32.exe powrprof.dll,SetSuspendState 0,1,0"), #NO: Seems to go into hibernate or something
 	"SuspendPC": Action_ExecuteCustomPy(SystemState_Suspend),
 	"OpenControlPanel": Action_ExecuteShell("explorer shell:ControlPanelFolder"),
 	"OpenFldFonts": Action_ExecuteShell("explorer shell:Fonts"),
 	"OpenMyComputer": Action_ExecuteShell("explorer shell:MyComputerFolder"),
-    #Libraries:
+	#Libraries:
 	"OpenLibDocs": Action_ExecuteShell("explorer shell:documentsLibrary"),
-    #User folders:
+	#User folders:
 	"OpenFldAppData": Action_ExecuteShell("explorer shell:AppData"),
 	"OpenFldAppData_Local": Action_ExecuteShell("explorer shell:Local AppData"),
 	"OpenFldDocs": Action_ExecuteShell("explorer shell:Personal"),
@@ -43,7 +46,6 @@ traps_main = SignalTraps({
 	"OpenFldFavorites": Action_ExecuteShell("explorer shell:Favorites"),
 	"OpenFldDesktop": Action_ExecuteShell("explorer shell:desktop"),
 	"OpenFldStartup": Action_ExecuteShell("explorer shell:Startup"),
-     
 })
 env.mode_add("default", [traps_main])
 env.mode_setactive("default")

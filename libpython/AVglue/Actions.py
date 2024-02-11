@@ -71,6 +71,17 @@ class Action_DecodeInt64(AbstractAction):
 		return f"DECODEINT64 {self.decoder_id}"
 
 #-------------------------------------------------------------------------------
+class Action_SwitchMode(AbstractAction):
+	"""Switch operating mode"""
+	def __init__(self, modeid):
+		self.modeid = modeid
+	def run(self, env:OperatingEnvironment):
+		env.mode_setactive(self.modeid)
+		return True
+	def serialize(self):
+		return f"SETMODE {self.modeid}"
+
+#-------------------------------------------------------------------------------
 class Action_ExecuteShell(AbstractAction):
 	"""Execute shell - not necessarily portable"""
 	def __init__(self, cmd):
@@ -90,7 +101,7 @@ class Action_ExecuteCustomPy(AbstractAction):
 			fnid = fn.__name__
 		self.fnid = fnid
 	def run(self, env:OperatingEnvironment):
-		return self.fn()
+		return self.fn(env)
 	def serialize(self):
 		return f"EXECPY {self.fnid}"
 

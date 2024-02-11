@@ -12,7 +12,7 @@ cmdbase = THIS_DIR & "\..\applets\Windows\" & scriptname
 sigarray = Array(_
 	"VOLMUTE 0",_
 	"a b c d",_
-	"VOLBTN 5",_
+	"NUMBTN 5",_
 	"IR 0xABCD",_
 	"NOGOOD",_
 	"VOLMUTE"_

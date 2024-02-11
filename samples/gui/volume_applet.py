@@ -83,38 +83,59 @@ volscrub = VolumeScrubber(appwnd, env)
 
 #Define `Frame`s used to place buttons in rows
 #-------------------------------------------------------------------------------
-NROWS = 4
+NROWS = 5
 frame_rows = [
 	tk.Frame(appwnd) for i in range(NROWS)
 ]
 for f in frame_rows:
 	f.pack(fill="y") #Add elements from left-to-right
 
-#Add numbered buttons (volume presets)
+#Add mode buttons
 #-------------------------------------------------------------------------------
 fref = frame_rows[0]
+for id in ("mode: volumectrl", "mode: notepad"):
+	btn[id] = tk.Button(fref, text=id)
+	btn[id].pack(side="left", fill="y")
+
+#Add numbered buttons (volume presets)
+#-------------------------------------------------------------------------------
+fref = frame_rows[1]
 for i in (*range(1, 10), 0): #Want 0 last
 	btn[i] = tk.Button(fref, text=f"     {i}     ")
 	btn[i].pack(side="left", fill="y")
 	if 5==i:
-		fref = frame_rows[1]
+		fref = frame_rows[2]
 
 #Add volume -/+ buttons
 #-------------------------------------------------------------------------------
-fref = frame_rows[2]
+fref = frame_rows[3]
 for id in ("VOL-", "VOL+"):
 	btn[id] = tk.Button(fref, text=id)
 	btn[id].pack(side="left", fill="y")
 
 #Add mute buttons
 #-------------------------------------------------------------------------------
-fref = frame_rows[3]
+fref = frame_rows[4]
 for id in ("mute", "un-mute", "toggle mute"):
 	btn[id] = tk.Button(fref, text=id)
 	btn[id].pack(side="left", fill="y")
 
 
-#==Connect click event handlers
+#==Normal button click handlers
+#===============================================================================
+def btn_sethandler(btn:tk.Button, action:AbstractAction, env):
+	#NOTE: lambda uses variables with local scope here - so we know that
+	#whatever arguments are passed to this function will exist only for this
+	#one event handler/lambda function.
+	btn.configure(command=lambda : action.run(env))
+
+def btn_sethandler_sig(btn:tk.Button, signame, env, data_int64=None):
+	#Handler is specifically to trigger a signal (and update scurbber)
+	action = Action_TriggerLocal(Signal(signame), data_int64=data_int64)
+	btn.configure(command=lambda : action.run(env))
+
+
+#==Volume button click handlers (refresh volume scrubber)
 #===============================================================================
 def volume_runaction(btn:tk.Button, action:AbstractAction, env):
 	action.run(env)
@@ -131,11 +152,18 @@ def volumebtn_sethandler_sig(btn:tk.Button, signame, env, data_int64=None):
 	action = Action_TriggerLocal(Signal(signame), data_int64=data_int64)
 	btn.configure(command=lambda : volume_runaction(btn, action, env))
 
+
+#==Connect appropriate event handlers
+#===============================================================================
+
 #Trigger actions by sending signals (Op-Env decides how to trap/react to signals):
 #-------------------------------------------------------------------------------
+volumebtn_sethandler_sig(btn["mode: volumectrl"], "MODEVOL", env)
+volumebtn_sethandler_sig(btn["mode: notepad"], "MODENOTEPAD", env)
+
 for i in range(10): #0-9
 	btn_i:tk.Button = btn[i]
-	volumebtn_sethandler_sig(btn_i, "VOLBTN", env, data_int64=i)
+	volumebtn_sethandler_sig(btn_i, "NUMBTN", env, data_int64=i)
 
 #Maybe user wants the signal traps prefer to jump up/down by 1, 2, 3 steps... who knows?:
 volumebtn_sethandler_sig(btn["VOL-"], "VOL-", env)

@@ -36,32 +36,37 @@ def btn_sethandler_sig(btn:tk.Button, signame, env, data_int64=None):
 	action = Action_TriggerLocal(Signal(signame), data_int64=data_int64)
 	btn.configure(command=lambda : action.run(env))
 
-def frame_addbutton(frame, lbl, signame, env):
-	btn = tk.Button(frame, text=lbl)
+def ctw_addbutton(ctw, lbl, signame, env):
+	"""Container widget: add button"""
+	btn = tk.Button(ctw, text=lbl)
 	btn.pack(side="left", fill="y")
 	btn_sethandler_sig(btn, signame, env)
 	return btn
 
 #==Add buttons with shortcuts
 #===============================================================================
-btn_d = {
-	"Suspend": "SuspendPC",
-	"Control Panel": "OpenControlPanel",
-	"My Computer": "OpenMyComputer",
-}
-fref = frame_rows[0]
-for (lbl, signame) in btn_d.items():
-	btn[lbl] = frame_addbutton(fref, lbl, signame, env)
-
-btn_d = {
-	"My documents": "OpenFldDocs",
-	"My music": "OpenFldMusic",
-	"My pictures": "OpenFldPictures",
-	"My videos": "OpenFldVideos",
-}
-fref = frame_rows[1]
-for (lbl, signame) in btn_d.items():
-	btn[lbl] = frame_addbutton(fref, lbl, signame, env)
+SEP = "-"
+btn_list = [
+	#(label, signame),
+	("Suspend", "SuspendPC"),
+	("Control Panel", "OpenControlPanel"),
+	("My Computer", "OpenMyComputer"),
+	SEP,
+	("Youtube", "OpenYoutube"),
+	("Calc", "OpenCalc"),
+	SEP,
+	("My documents", "OpenFldDocs"),
+	("My music", "OpenFldMusic"),
+	("My pictures", "OpenFldPictures"),
+	("My videos", "OpenFldVideos"),
+]
+row = 0
+for btn_data in btn_list:
+	if btn_data == SEP:
+		row += 1
+		continue
+	(lbl, signame) = btn_data
+	btn[lbl] = ctw_addbutton(frame_rows[row], lbl, signame, env)
 
 
 #==Show/start application

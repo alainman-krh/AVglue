@@ -71,6 +71,7 @@ class Decoder_Int64():
 class OperatingEnvironment():
 	"""Will typically have only one. Cleaner than global variables."""
 	def __init__(self):
+		self.verbose = False
 		self.modes = {}
 		self.actions = {}
 		self.mode_add("OFF", tuple())
@@ -91,6 +92,8 @@ class OperatingEnvironment():
 	def mode_setactive(self, id):
 		self.mode_activeid = id
 		self.mode_activestack = self.modes[id] #Keep it cached (avoid constant lookup)
+		if self.verbose:
+			self.log_info("Switching to mode: " + id)
 
 	def actions_add(self, id, action):
 		self.actions[id] = action #:AbstractAction
