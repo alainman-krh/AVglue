@@ -4,6 +4,7 @@ from AVglue.Windows.Actions import *
 from AVglue.Actions import *
 from AVglue.PythonTools import clamp2range
 from PySystemDefs import MediaPC1
+from TKglue.EventHandling import wgt_sethandler
 import tkinter as tk
 
 
@@ -126,7 +127,6 @@ for id in ("mute", "un-mute", "toggle mute"):
 
 #==Connect appropriate event handlers
 #===============================================================================
-from TKglue.EventHandling import wgt_sethandler
 
 #Mode select
 #-------------------------------------------------------------------------------

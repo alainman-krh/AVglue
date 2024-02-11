@@ -1,7 +1,5 @@
 #TKglue/EventHandling
 #-------------------------------------------------------------------------------
-from AVglue.Base import AbstractAction, Signal
-from AVglue.Actions import Action_TriggerLocal
 import tkinter as tk
 
 
@@ -13,3 +11,10 @@ def wgt_sethandler(wgt:tk.Widget, fn_eventhandler, env):
 	#whatever arguments are passed to this function will exist only for this
 	#one event handler/lambda function (safe/works).
 	wgt.configure(command=lambda : fn_eventhandler(wgt, env))
+
+def wgtdict_findkey_matching(wgt:tk.Widget, wgtdict):
+	"""-wgtlist:tk.Widget[]"""
+	for (k, w) in wgtdict.items():
+		if w is wgt:
+			return k
+	return None
