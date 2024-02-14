@@ -24,7 +24,6 @@ btninfo_map = {
 #==Add buttons and set event handlers
 #===============================================================================
 def EHrunbutton_click(btn:tk.Button, env:OperatingEnvironment):
-	#NOTE: Could instead store btnid ni btn itself
 	btnid = btn.btnid
 	if btnid is None:
 		env.log_error("Unexpected click source.")

@@ -33,7 +33,7 @@ def SendKeys_NumToNotepad(env:OperatingEnvironment):
 	kstr = f"{env.data_int64}"
 	#Hacky way to identify which window gets keypresses
 	#(assumes new notepad window exists):
-	Action_SendKeys("Untitled - Notepad", kstr).run(env)
+	Action_SendKeys(kstr, "Untitled - Notepad").run(env)
 
 traps_notepad = SignalTraps({
 	#Don't decode volume signals! Route NUMBTN signals to notepad

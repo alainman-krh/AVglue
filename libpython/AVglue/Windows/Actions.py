@@ -2,8 +2,10 @@
 #-------------------------------------------------------------------------------
 from AVglue.Base import OperatingEnvironment, AbstractAction
 from pycaw.pycaw import IAudioEndpointVolume
-from time import sleep
 import win32com.client as COM
+import win32con as winCONST
+import win32api
+from time import sleep
 
 
 #==Concrete Actions
@@ -13,7 +15,7 @@ import win32com.client as COM
 class Action_SendKeys(AbstractAction):
 	"""Sends a key sequence"""
 	#TODO: Send to a particular application???
-	def __init__(self, appname, seq, twait=0):
+	def __init__(self, seq, appname=None, twait=0):
 		"""-appname=0 sends key sequence to active window"""
 		self.appname = appname
 		self.seq = seq
@@ -31,7 +33,34 @@ class Action_SendKeys(AbstractAction):
 		return True #success
 
 	def serialize(self):
-		return f"SENDKEYS {self.appname} {self.seq} {self.twait}"
+		return f"SENDKEYS {self.seq} {self.appname} {self.twait}"
+
+#-------------------------------------------------------------------------------
+class Action_SendVirtKey(AbstractAction):
+	"""Sends a key sequence"""
+	#TODO: Send to a particular application???
+	def __init__(self, vk, appname=None, twait=0):
+		"""-appname=0 sends key sequence to active window.
+		-vk: defined in constants-module: `win32con` (ex: `win32con.VK_MEDIA_PLAY_PAUSE`)."""
+		self.appname = appname
+		self.vk = vk
+		self.twait = twait
+		self.shell = COM.Dispatch("WScript.Shell")
+
+	def run(self, env:OperatingEnvironment):
+		if self.appname not in (0, None, "0"):
+			self.shell.AppActivate(self.appname)
+		if self.twait > 0:
+			sleep(self.twait)
+		bscan = win32api.MapVirtualKey(self.vk, 0)
+		win32api.keybd_event(self.vk, bscan)
+		win32api.keybd_event(self.vk, bscan, winCONST.KEYEVENTF_KEYUP)
+		if env.verbose:
+			env.log_info(f"Sending VK: `{self.vk}` (hwcode: {bscan})")
+		return True #success
+
+	def serialize(self):
+		return f"SENDVKEY {self.vk} {self.appname} {self.twait}"
 
 #-------------------------------------------------------------------------------
 class Action_VolumeSet(AbstractAction):

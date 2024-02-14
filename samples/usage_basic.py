@@ -36,8 +36,11 @@ act_calcopen = Action_ExecuteShell("calc.exe")
 act_calctest = Action_ExecuteSequence("DEPRECATEIDFIELD?", [
 	Action_ExecuteShell("calc.exe"),
 	Action_Wait(0.5),
-	#Action_SendKeys(0, "3{+}14{ENTER}"),
-	Action_SendKeys("Calculator", "3{+}14{ENTER}"),
+	#Action_SendKeys("3", "Calculator", twait=0.5),
+	#Action_SendVirtKey(winCONST.VK_DECIMAL),
+	#Action_SendKeys("14"),
+	#Action_SendKeys("3{+}14{ENTER}"),
+	Action_SendKeys("3{+}14{ENTER}", "Calculator"),
 ])
 success = act_calctest.run(env)
 
