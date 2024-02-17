@@ -18,6 +18,8 @@ To make the `AVglue` library to be available to your own application, you must a
 - ...
 
 The following libs are required to use `AVglue` (and likely not installed):
+- `pyserial`, `toml`
+- (Windows-COM): `pywin32`
 - (Windows-Media bindings): `comtypes`, `pycaw`
 - (Windows-GUI bindings): `tk`
 
