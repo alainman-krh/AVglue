@@ -129,6 +129,18 @@ class OperatingEnvironment():
 		return False #fail
 
 #-------------------------------------------------------------------------------
+	@staticmethod
+	def _datastr_toint64(dstr:str):
+		try:
+			if "0x" == dstr[:2]:
+				data = int(dstr, 16)
+			else:
+				data = int(dstr)
+		except:
+			data = 0 #Don't crash
+		return data
+
+#-------------------------------------------------------------------------------
 	def message_tosignal(self, msg:str):
 		RESULT_NOSIG = (None, 0)
 		tokens = msg.split()
@@ -141,11 +153,7 @@ class OperatingEnvironment():
 
 		data = None
 		if N > 1: #We have data
-			dstr = tokens[1]
-			if "0x" == dstr[:2]:
-				data = int(dstr, 16)
-			else:
-				data = int(dstr)
+			data = self._datastr_toint64(tokens[1])
 
 		id = tokens[0]
 		return (Signal(id), data)

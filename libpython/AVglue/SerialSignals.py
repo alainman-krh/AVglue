@@ -25,15 +25,32 @@ class SignalListener(AbstractWorker):
 #===============================================================================
 class ConnectionManager():
 	"""Listener (server) side."""
-	def __init__(self, env):
+	def __init__(self, env, io=None):
 		self.env = env
+		self.io = io
 
-	def start(self, port:str, verbose=False):
-		io = Serial(port)
-		self.env.log_info(f"Connected to {port}.")
+	def ensure_connected(self, want_connected):
+		if want_connected:
+			if self.io is None:
+				raise Exception("Cannot proceed: not connected!")
+		else:
+			if self.io != None:
+				raise Exception("Cannot proceed: already connected!")
 
-		with io:
+	def connect(self, port):
+		self.ensure_connected(False)
+		self.io = Serial(port)
+
+	def start(self, connect=None, verbose=False):
+		if connect != None:
+			self.connect(port=connect)
+		self.ensure_connected(True)
+		self.env.log_info(f"Connected to {self.io}.")
+		print(self.io.name)
+		with self.io:
 			while True:
+
 				worker = SignalListener(verbose=verbose)
-				worker.run(self.env, io)
+				worker.run(self.env, self.io)
 				#break #Make self available for new connections
+	

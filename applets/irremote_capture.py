@@ -1,10 +1,19 @@
 #applets/irremote_capture.py
 #-------------------------------------------------------------------------------
-from AVglue.Windows.Actions import *
-from AVglue.Actions import *
-from TKglue.EventHandling import wgt_sethandler
-import tkinter as tk
+from libapp.irremote_capture.Env import env
+from SerialGlue.Base import PortManager
+
 
 #==
 #===============================================================================
+env.log_info("COM ports detected on system (Candidates for IR reciever devices):")
+portmgr = PortManager()
+portmgr.portlist_diplay()
+
 import libapp.irremote_capture.GUI #Runs GUI
+
+#Test serial:
+#from AVglue.SerialSignals import ConnectionManager, OperatingEnvironment
+#env = OperatingEnvironment() #Empty
+#mgr = ConnectionManager(env)
+#mgr.start(connect="COM7")
