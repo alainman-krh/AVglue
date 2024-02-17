@@ -3,34 +3,34 @@
 from AVglue.Windows.Actions import *
 from AVglue.Actions import *
 from PySystemDefs import WindowsWithMacros
-from TKglue.EventHandling import wgt_sethandler
+from TKglue.Builders import TKButtonRows, SEP_ROW
 import tkinter as tk
 
 
 #==Define shortcut buttons
 #===============================================================================
-btninfo_map = {
-	#NOTE: button id does not have to match text:
-	"suspend": ("Suspend", "SuspendPC"),
-	"ctrlpnl": ("Control Panel", "OpenControlPanel"),
-	"mycomputer": ("My Computer", "OpenMyComputer"),
-	"youtube": ("Youtube", "OpenYoutube"),
-	"calc": ("Calc", "OpenCalc"),
+btnshortcuts_lblmap = { #Shortcut buttons
+	#button-id: label (In case someone wants something different on labels)
+	"SuspendPC": "Suspend",
+	"OpenControlPanel": "Control Panel",
+	"OpenMyComputer": "My Computer",
+	"OpenYoutube": "Youtube",
+	"OpenCalc": "Calc",
 	#NOTEPAD?
-	"mydocs": ("My documents", "OpenFldDocs"),
-	"mymusic": ("My music", "OpenFldMusic"),
-	"mypics": ("My pictures", "OpenFldPictures"),
-	"myvids": ("My videos", "OpenFldVideos"),
+	"OpenFldDocs": "My documents",
+	"OpenFldMusic": "My music",
+	"OpenFldPictures": "My pictures",
+	"OpenFldVideos": "My videos",
 }
+
 
 #==Add buttons and set event handlers
 #===============================================================================
 def EHrunbutton_click(btn:tk.Button, env:OperatingEnvironment):
-	btnid = btn.btnid
-	if btnid is None:
+	signame = btn.btnid
+	if signame is None:
 		env.log_error("Unexpected click source.")
 		return
-	(lbl, signame) = btninfo_map[btnid]
 	env.signal_trigger(Signal(signame))
 
 
@@ -42,35 +42,18 @@ env = WindowsWithMacros.env
 appwnd = tk.Tk()  # create parent window
 appwnd.title("Productivity shortcuts")
 
-#Define `Frame`s used to place buttons in rows
-#-------------------------------------------------------------------------------
-NROWS = 4
-frame_rows = [
-	tk.Frame(appwnd) for i in range(NROWS)
-]
-for f in frame_rows:
-	f.pack(fill="y") #Add elements from left-to-right
-
 #Add shortcut buttons
 #-------------------------------------------------------------------------------
-SEP = "-"
-btnid_list = ( #Implicitly defines the layout
-	"suspend", "ctrlpnl", "mycomputer",
-	SEP,
-	"youtube", "calc",
-	SEP,
-	"mydocs", "mymusic", "mypics", "myvids",
+btnshortcuts_lyt = ( #Implicitly defines the layout
+	"SuspendPC", "OpenControlPanel", "OpenMyComputer",
+	SEP_ROW,
+	"OpenYoutube", "OpenCalc",
+	SEP_ROW,
+	"OpenFldDocs", "OpenFldMusic", "OpenFldPictures", "OpenFldVideos",
 )
-row = 0
-for btnid in btnid_list:
-	if btnid == SEP:
-		row += 1
-		continue
-	(lbl, signame) = btninfo_map[btnid]
-	btn = tk.Button(frame_rows[row], text=lbl)
-	btn.btnid = btnid
-	wgt_sethandler(btn, EHrunbutton_click, env)
-	btn.pack(side="left")
+rowsi = TKButtonRows(appwnd)
+rowsi.append(4)
+rowsi.createblock(btnshortcuts_lblmap, btnshortcuts_lyt, EHrunbutton_click, env)
 
 
 #==Show/start application

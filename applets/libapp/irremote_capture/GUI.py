@@ -2,7 +2,7 @@
 #-------------------------------------------------------------------------------
 from AVglue.Windows.Actions import *
 from AVglue.Actions import *
-from TKglue.EventHandling import wgt_sethandler
+from TKglue.Builders import TKButtonRows, SEP_ROW
 import tkinter as tk
 
 
@@ -51,17 +51,16 @@ def EHmediabtn_click(btn:tk.Button, env:OperatingEnvironment):
 
 #Add shortcut buttons
 #-------------------------------------------------------------------------------
-SEP = "-"
 mediabtn_lyt = ( #Implicitly defines the layout
 	"rewind", "play", "ff",
-	SEP,
+	SEP_ROW,
 	"stop", "pause", "record",
-	SEP,
+	SEP_ROW,
 	"trackprev", "tracknext",
 )
 
-from TKglue.Builders import TKButtonRows
-rowsi = TKButtonRows(appwnd, 4)
+rowsi = TKButtonRows(appwnd)
+rowsi.append(4)
 rowsi.createblock(mediabtn_lblmap, mediabtn_lyt, EHmediabtn_click, env)
 
 

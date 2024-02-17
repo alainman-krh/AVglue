@@ -9,10 +9,14 @@ SEP_ROW = "-" #String/object used to identify a row separator
 #==TKButtonRows
 #===============================================================================
 class TKButtonRows:
-	def __init__(self, parent, nrows):
-		self.nrows = nrows
+	def __init__(self, parent):
+		self.nrows = 0
+		self.parent = parent
+
+	def append(self, nrows):
+		self.nrows += nrows
 		self.frame_rows = [
-			tk.Frame(parent) for i in range(nrows)
+			tk.Frame(self.parent) for i in range(nrows)
 		]
 		for f in self.frame_rows:
 			f.pack(fill="y") #Add elements from left-to-right
