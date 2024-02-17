@@ -2,12 +2,18 @@
 #-------------------------------------------------------------------------------
 from AVglue.Windows.Actions import *
 from AVglue.Actions import *
+from IRglue.Base import ControllerDef
+from SerialGlue.Base import PortManager
 from TKglue.Builders import TKButtonRows, SEP_ROW
 import tkinter as tk
 
 
 from .Env import env #Use simple environment for capturing IR signals
-remote_map = {} #Capture signals in a dict
+ctrldef = ControllerDef()
+
+env.log_info("COM ports detected on system (Candidates for IR reciever devices):")
+mgr = PortManager()
+mgr.portlist_diplay()
 
 
 #==Define shortcut buttons

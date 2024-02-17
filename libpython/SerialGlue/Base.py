@@ -41,8 +41,16 @@ class PortManager:
 						return port
 		return None
 
-sn = "SOMESERIALNO"
-mgr = PortManager()
-mgr.portlist_diplay()
-portid = mgr.portid_fromserialno(sn)
-print(portid)
+
+#==Quick test
+#===============================================================================
+def _testcode():
+	sn = "SOMESERIALNO"
+	mgr = PortManager()
+	mgr.portlist_diplay()
+	portid = mgr.portid_fromserialno(sn)
+	print(portid)
+
+if __name__ == '__main__':
+    _testcode()
+#Last line
