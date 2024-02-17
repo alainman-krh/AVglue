@@ -130,22 +130,22 @@ for id in ("mute", "un-mute", "toggle mute"):
 
 #Mode select
 #-------------------------------------------------------------------------------
-def EHmodesel_click(btn:tk.Button, env):
+def EHmodesel_click(btn:tk.Button, env:OperatingEnvironment):
 	if "notepad" in btn["text"]:
 		success = Action_TriggerLocal(Signal("MODENOTEPAD")).run(env)
 		if not success: #TODO: Won't work because can't yet detect application isn't present.
 			print("Please ensure there is a running copy of notepad with the following")
 			print('window title: "Untitled - Notepad"')
 	else:
-		Action_TriggerLocal(Signal("MODEVOL")).run(env)
+		env.signal_trigger(Signal("MODEVOL"))
 for id in ("mode: volumectrl", "mode: notepad"):
 	wgt_sethandler(btn[id], EHmodesel_click, env)
 
 #Number buttons: Send NUMBTN signals
 #-------------------------------------------------------------------------------
-def EHnumbuttons_click(btn:tk.Button, env):
+def EHnumbuttons_click(btn:tk.Button, env:OperatingEnvironment):
 	num = int(btn["text"])
-	Action_TriggerLocal(Signal("NUMBTN"), data_int64=num).run(env)
+	env.signal_trigger(Signal("NUMBTN"), data_int64=num)
 	volscrub.refresh() #Don't forget to refresh GUI when you run an action!
 for i in range(10): #0-9
 	wgt_sethandler(btn[i], EHnumbuttons_click, env)
@@ -154,13 +154,13 @@ for i in range(10): #0-9
 #(Maybe user wants the signal traps prefer to jump up/down by 1, 2, 3 steps... who knows?)
 #...or maybe user wants volume -/+ to only work in certain modes
 #-------------------------------------------------------------------------------
-def EHvolupdn_click(btn:tk.Button, env):
+def EHvolupdn_click(btn:tk.Button, env:OperatingEnvironment):
 	sigmap = { #Technically don't need a map here - but useful pattern:
 		"VOL-": Signal("VOL-"),
 		"VOL+": Signal("VOL+"),
 	}
 	signal = sigmap[btn["text"]]
-	success = Action_TriggerLocal(signal).run(env)
+	success = env.signal_trigger(signal)
 	if not success:
 		print('Switch back to "mode: volumectrl" to trap signals')
 	volscrub.refresh() #Don't forget to refresh GUI when you run an action!

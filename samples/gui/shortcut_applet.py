@@ -1,3 +1,5 @@
+#samples/gui/shortcut_applet.py
+#-------------------------------------------------------------------------------
 from AVglue.Windows.Actions import *
 from AVglue.Actions import *
 from PySystemDefs import WindowsWithMacros
@@ -29,7 +31,7 @@ def EHrunbutton_click(btn:tk.Button, env:OperatingEnvironment):
 		env.log_error("Unexpected click source.")
 		return
 	(lbl, signame) = btninfo_map[btnid]
-	Action_TriggerLocal(Signal(signame)).run(env)
+	env.signal_trigger(Signal(signame))
 
 
 #==Build up GUI
