@@ -1,6 +1,10 @@
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 import sys
 print(sys.executable)
+
+#List installed packages
+#%pip list
+
 #%pip install pyserial
 #%pip install toml
 
