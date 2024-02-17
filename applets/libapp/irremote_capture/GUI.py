@@ -60,8 +60,8 @@ mediabtn_lyt = ( #Implicitly defines the layout
 )
 
 rowsi = TKButtonRows(appwnd)
-rowsi.append(4)
-rowsi.createblock(mediabtn_lblmap, mediabtn_lyt, EHmediabtn_click, env)
+rowsi.row_append(4)
+rowsi.createblock(mediabtn_lblmap, EHmediabtn_click, data=env, layout=mediabtn_lyt)
 
 
 #==Show/start application

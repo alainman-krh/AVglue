@@ -4,8 +4,12 @@ from AVglue.Windows.Actions import *
 from AVglue.Actions import *
 from AVglue.PythonTools import clamp2range
 from PySystemDefs import MediaPC1
-from TKglue.EventHandling import wgt_sethandler
+from TKglue.Builders import TKButtonRows, SEP_ROW
 import tkinter as tk
+
+
+#Alias to AVGlue.OperatingEnvironment:
+env = MediaPC1.env
 
 
 #==Fancy volume scrubber
@@ -71,116 +75,96 @@ class VolumeScrubber:
 		self.w.configure(command=lambda p1, p2, p3=None : self.pos_update(p1, p2, p3))
 
 
-#==Build up GUI
-#===============================================================================
-#Alias to AVGlue.OperatingEnvironment:
-env = MediaPC1.env
-
-appwnd = tk.Tk()  # create parent window
-appwnd.title("Volume control")
-btn = {}
-
-#First row: volume scrollbar
-#-------------------------------------------------------------------------------
-volscrub = VolumeScrubber(appwnd, env)
-
-#Define `Frame`s used to place buttons in rows
-#-------------------------------------------------------------------------------
-NROWS = 5
-frame_rows = [
-	tk.Frame(appwnd) for i in range(NROWS)
-]
-for f in frame_rows:
-	f.pack()
-
-#Add mode buttons
-#-------------------------------------------------------------------------------
-fref = frame_rows[0]
-frame_rows[0].pack(fill="both", expand=True)
-for id in ("mode: volumectrl", "mode: notepad"):
-	btn[id] = tk.Button(fref, text=id)
-	btn[id].pack(side="left", fill="both", expand=True)
-
-#Add numbered buttons (volume presets)
-#-------------------------------------------------------------------------------
-fref = frame_rows[1]
-for i in (*range(1, 10), 0): #Want 0 last
-	btn[i] = tk.Button(fref, text=f"     {i}     ")
-	btn[i].pack(side="left", fill="y")
-	if 5==i:
-		fref = frame_rows[2]
-
-#Add volume -/+ buttons
-#-------------------------------------------------------------------------------
-fref = frame_rows[3]
-for id in ("VOL-", "VOL+"):
-	btn[id] = tk.Button(fref, text=id)
-	btn[id].pack(side="left", fill="y")
-
-#Add mute buttons
-#-------------------------------------------------------------------------------
-fref = frame_rows[4]
-for id in ("mute", "un-mute", "toggle mute"):
-	btn[id] = tk.Button(fref, text=id)
-	btn[id].pack(side="left", fill="y")
-
-
-#==Connect appropriate event handlers
+#==Event handlers
 #===============================================================================
 
 #Mode select
 #-------------------------------------------------------------------------------
 def EHmodesel_click(btn:tk.Button, env:OperatingEnvironment):
-	if "notepad" in btn["text"]:
+	if "notepad" in btn.btnid:
 		success = Action_TriggerLocal(Signal("MODENOTEPAD")).run(env)
 		if not success: #TODO: Won't work because can't yet detect application isn't present.
 			print("Please ensure there is a running copy of notepad with the following")
 			print('window title: "Untitled - Notepad"')
 	else:
 		env.signal_trigger(Signal("MODEVOL"))
-for id in ("mode: volumectrl", "mode: notepad"):
-	wgt_sethandler(btn[id], EHmodesel_click, env)
 
 #Number buttons: Send NUMBTN signals
 #-------------------------------------------------------------------------------
 def EHnumbuttons_click(btn:tk.Button, env:OperatingEnvironment):
-	num = int(btn["text"])
+	num = int(btn.btnid)
 	env.signal_trigger(Signal("NUMBTN"), data_int64=num)
 	volscrub.refresh() #Don't forget to refresh GUI when you run an action!
-for i in range(10): #0-9
-	wgt_sethandler(btn[i], EHnumbuttons_click, env)
 
 #"VOL-/+": Send signals instead of running actions directly!
 #(Maybe user wants the signal traps prefer to jump up/down by 1, 2, 3 steps... who knows?)
 #...or maybe user wants volume -/+ to only work in certain modes
 #-------------------------------------------------------------------------------
 def EHvolupdn_click(btn:tk.Button, env:OperatingEnvironment):
-	sigmap = { #Technically don't need a map here - but useful pattern:
+	sigmap = { #Technically don't need a map here - but useful pattern shown as an example:
 		"VOL-": Signal("VOL-"),
 		"VOL+": Signal("VOL+"),
 	}
-	signal = sigmap[btn["text"]]
+	signal = sigmap[btn.btnid]
 	success = env.signal_trigger(signal)
 	if not success:
 		print('Switch back to "mode: volumectrl" to trap signals')
 	volscrub.refresh() #Don't forget to refresh GUI when you run an action!
-for id in ("VOL-", "VOL+"):
-	wgt_sethandler(btn[id], EHvolupdn_click, env)
 
 #Mute/un-mute: Directly perform actions (don't trigger a signal that first needs to be trapped):
 #HOWEVER: By sending signals, environment could be configured with traps that reduce volume (instead of actually muting).
 #-------------------------------------------------------------------------------
 def EHvolmute_click(btn:tk.Button, env):
 	muteop = 1 #basic mute
-	lbl = btn["text"]
-	if "un-" in lbl:
+	if "un-" in btn.btnid:
 		muteop = 0 #unmute
-	elif "toggle" in lbl:
+	elif "toggle" in btn.btnid:
 		muteop = -1
 	success = Action_VolumeMute("MASTER", muteop).run(env)
 	volscrub.refresh() #Don't forget to refresh GUI when you run an action!
-for id in ("mute", "un-mute", "toggle mute"):
-	wgt_sethandler(btn[id], EHvolmute_click, env)
+
+
+#==Build up GUI
+#===============================================================================
+appwnd = tk.Tk()  # create parent window
+appwnd.title("Volume control")
+rows_mode = TKButtonRows(appwnd) #Separate one - just for modes
+rowsi = TKButtonRows(appwnd) #All other rows in here
+
+#+ROW: volume scrollbar
+#-------------------------------------------------------------------------------
+volscrub = VolumeScrubber(appwnd, env)
+
+#+ROW: mode buttons
+#-------------------------------------------------------------------------------
+modebtn_lblmap = {
+	"mode:volctrl": "Mode: Volume control",
+	"mode:notepad": "Mode: Notepad write",
+}
+rows_mode.row_append(fill="both", expand=True)
+rows_mode.btnpack_change(side="left", fill="both", expand=True)
+rows_mode.createblock(modebtn_lblmap, EHmodesel_click, data=env)
+
+#+ROW: numbered buttons (volume presets)
+#-------------------------------------------------------------------------------
+numbtn_list = tuple(range(10))
+numbtn_lblmap = {f"{i}": f"     {i}     " for i in numbtn_list}
+numbtn_lyt = ["1", "2", "3", "4", "5", SEP_ROW, "6", "7", "8", "9", "0"]
+rowsi.row_append(2)
+rowsi.createblock(numbtn_lblmap, EHnumbuttons_click, data=env, layout=numbtn_lyt)
+
+#+ROW: volume -/+ buttons
+#-------------------------------------------------------------------------------
+volbtn_map = {"VOL-": "VOL-", "VOL+": "VOL+"}
+rowsi.row_append()
+rowsi.createblock(volbtn_map, EHvolupdn_click, data=env)
+
+#Add mute buttons
+#-------------------------------------------------------------------------------
+mutebtn_list = ("mute", "un-mute", "toggle mute")
+mutebtn_map = {id: id for id in mutebtn_list}
+rowsi.row_append()
+rowsi.createblock(mutebtn_map, EHvolmute_click, data=env)
 
 
 #==Show/start application

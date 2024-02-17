@@ -52,8 +52,8 @@ btnshortcuts_lyt = ( #Implicitly defines the layout
 	"OpenFldDocs", "OpenFldMusic", "OpenFldPictures", "OpenFldVideos",
 )
 rowsi = TKButtonRows(appwnd)
-rowsi.append(4)
-rowsi.createblock(btnshortcuts_lblmap, btnshortcuts_lyt, EHrunbutton_click, env)
+rowsi.row_append(4)
+rowsi.createblock(btnshortcuts_lblmap, EHrunbutton_click, data=env, layout=btnshortcuts_lyt)
 
 
 #==Show/start application
