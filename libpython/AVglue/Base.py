@@ -13,6 +13,17 @@ def int64str(v):
 	return f"{v:016X}"
 
 
+#==General controller/worker classes (ex: for client-server applications)
+#===============================================================================
+class AbstractController(metaclass=ABCMeta):
+	"""Mostly used to identify class as a controller (client side)"""
+	pass
+
+class AbstractWorker(metaclass=ABCMeta):
+	"""Mostly used to identify class as a worker (listener/server side)"""
+	pass
+
+
 #==Signals and traps
 #===============================================================================
 class Signal():
@@ -66,7 +77,7 @@ class Decoder_Int64():
 			print(f'"{astr}", {int64str(pat)}, mask={int64str(mask)}')
 
 
-#==
+#==OperatingEnvironment
 #===============================================================================
 class OperatingEnvironment():
 	"""Will typically have only one. Cleaner than global variables."""
@@ -102,17 +113,49 @@ class OperatingEnvironment():
 		#Assumes always Int64 for the time being.
 		self.decoders_int64[id] = decoder
 
-	def signal_trigger(self, sig:Signal):
+#-------------------------------------------------------------------------------
+	def signal_trigger(self, sig:Signal, data_int64=None):
 		for layer in self.mode_activestack:
 			layer:SignalTraps
 			action = layer.trap(sig)
 			if action is not None:
 				action:AbstractAction
+				self.data_int64 = data_int64
+				if self.verbose:
+					self.log_info(f"Triggering: ({sig.serialize()}, {data_int64}).")
 				#self.log_info("Running " + action.serialize())
 				return action.run(self)
 		self.log_info(f'Signal not trapped: "{sig.serialize()}"')
 		return False #fail
 
+#-------------------------------------------------------------------------------
+	def message_tosignal(self, msg:str):
+		RESULT_NOSIG = (None, 0)
+		tokens = msg.split()
+		N = len(tokens)
+		if N < 1:
+			return RESULT_NOSIG
+		elif N > 2:
+			self.log_error(f"Only supports signals with up to 1 optional argument:\n`{msg}`")
+			return RESULT_NOSIG
+
+		data = None
+		if N > 1: #We have data
+			dstr = tokens[1]
+			if "0x" == dstr[:2]:
+				data = int(dstr, 16)
+			else:
+				data = int(dstr)
+
+		id = tokens[0]
+		return (Signal(id), data)
+
+#-------------------------------------------------------------------------------
+	def message_process(self, msg:str):
+		(sig, data) = self.message_tosignal(msg)
+		if sig is None:
+			return False
+		return self.signal_trigger(sig, data_int64=data)
 
 
 #==Abstract bulding blocks

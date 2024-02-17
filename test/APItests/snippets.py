@@ -1,4 +1,8 @@
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+import sys
+sys.executable
+#%pip install pyserial
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 import win32com.client as COM
 shell = COM.Dispatch("WScript.Shell")
 shell.Run(r"cmd /K CD C:\ & Dir")
@@ -68,4 +72,59 @@ print(volume.GetMasterVolumeLevel()) #dB
 print(volume.GetVolumeStepInfo()) #First return value is volume level from 0 ->50
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 volume.SetMasterVolumeLevel(-20.0, None)
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#Example on using `python -m`
+from os import system
+import sys
+pycmd = sys.executable
+
+#Won't like sys.argv in Jupyter:
+#from serial.tools import list_ports
+#list_ports.main()
+
+#cmd = f"{pycmd} -m serial.tools.list_ports"
+cmd = f"{pycmd} -m serial.tools.list_ports -h"
+#Won't show stdout
+#system(cmd)
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#Example of using subprocess
+import subprocess
+#cmd = f"{pycmd} -m serial.tools.list_ports"
+cmd = f"{pycmd} -m serial.tools.list_ports -h"
+result = subprocess.run(cmd, stdout=subprocess.PIPE)
+#result = subprocess.run([pycmd, "-m", "serial.tools.list_ports", "-v"], stdout=subprocess.PIPE)
+print(result.stdout.decode('utf-8'))
+
+print("DONE")
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#Example of finding serial device by SN
+import os
+if os.name == 'nt':  # sys.platform == 'win32':
+    from serial.tools.list_ports_windows import comports
+elif os.name == 'posix':
+    from serial.tools.list_ports_posix import comports
+else:
+    raise ImportError("OS not supported: {os.name}.")
+
+def comport_find(sn:str):
+	sn = sn.lower()
+	iterator = sorted(comports())
+
+	for n, (port, desc, hwid) in enumerate(iterator, 1):
+		hwid_split = hwid.split()
+		for v in hwid_split:
+			if "SER=" in v:
+				sn_i = v.split("=")[-1]
+				if sn_i.lower() == sn:
+					return port
+	return None
+sn = "SOMESERIALNO"
+port = comport_find(sn)
+print(port)
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+from serial import Serial
+io = Serial(port)
+while True:
+	line = io.readline()
+	print(line)
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

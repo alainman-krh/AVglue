@@ -13,8 +13,7 @@ class Action_TriggerLocal(AbstractAction):
 		self.sig = sig
 		self.data_int64 = data_int64
 	def run(self, env:OperatingEnvironment):
-		env.data_int64 = self.data_int64
-		return env.signal_trigger(self.sig)
+		return env.signal_trigger(self.sig, data_int64=self.data_int64)
 	def serialize(self):
 		return f'TRIGLCL "{self.sig.serialize()}"'
 

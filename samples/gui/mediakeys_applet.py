@@ -14,16 +14,16 @@ env = MediaPC1.env
 #Some useful constants:
 #-------------------------------------------------------------------------------
 #Some are just listed here; others are added (missing from winCONST)
-VK_SLEEP = 0x5F #Not in winCONST... but doesn't seem to work
+VK_SLEEP = 0x5F #Missing from winCONST... but doesn't seem to work
 winCONST.VK_VOLUME_MUTE #Toggle
 winCONST.VK_VOLUME_DOWN
 winCONST.VK_VOLUME_UP
 winCONST.VK_MEDIA_PLAY_PAUSE
-VK_MEDIA_STOP = 0xB2 #Missing
+VK_MEDIA_STOP = 0xB2 #Missing from winCONST
 winCONST.VK_MEDIA_NEXT_TRACK
 winCONST.VK_MEDIA_PREV_TRACK
-#Don't think these work:
 VK_BROWSER_FAVORITES   = 0xAB #Toggle browser favorites
+#Don't think these work:
 VK_LAUNCH_MAIL         = 0xB4 #Start Mail key
 VK_LAUNCH_MEDIA_SELECT = 0xB5 #Select Media key
 VK_LAUNCH_APP1         = 0xB6 #Start Application 1 key
