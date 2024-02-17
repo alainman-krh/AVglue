@@ -1,7 +1,14 @@
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 import sys
-sys.executable
+print(sys.executable)
 #%pip install pyserial
+#%pip install toml
+
+#Windows-GUI bindings:
+#%pip install tk
+
+#Windows-Media bindings:
+#%pip install comtypes pycaw
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 import win32com.client as COM
 shell = COM.Dispatch("WScript.Shell")
