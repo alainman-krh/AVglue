@@ -9,19 +9,23 @@ SEP_ROW = "-" #String/object used to identify a row separator
 #==TKButtonRows
 #===============================================================================
 class TKButtonRows:
+	BTNPACK_DEFAULT = {"side": "left"} #Add elements from left-to-right
+	ROWPACK_DEFAULT = {"fill": "y"}
 	def __init__(self, parent):
 		self.parent = parent
 		self.frame_rows = []
 		self.rowstart_default = 0
-		self.btnpack_change(side="left") #Add elements from left-to-right
+		self.btnpack_change() #Defaults
 
 	def btnpack_change(self, **opts):
 		"""Chage ".pack()" options for future calls to .createblock()."""
+		if len(opts) < 1:
+			opts = self.BTNPACK_DEFAULT
 		self.opts_btnpack = opts
 
 	def row_append(self, nrows=1, **packopt):
 		if len(packopt) < 1:
-			packopt = {"fill": "y"}
+			packopt = self.ROWPACK_DEFAULT
 		self.rowstart_default = len(self.frame_rows)
 		rows_new = [tk.Frame(self.parent) for i in range(nrows)]
 		self.frame_rows.extend(rows_new)
