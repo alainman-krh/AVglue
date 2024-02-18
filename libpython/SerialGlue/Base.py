@@ -20,25 +20,28 @@ class PortManager:
 	def portlist_refresh(self):
 		#Copy port_info - just in case iterator doesn't return copies itself
 		iterator = sorted(comports())
-		self.port_list = tuple(copy(port_info) for port_info in iterator)
+		self.port_list = tuple(copy(pinfo) for pinfo in iterator)
 
 	def portlist_diplay(self, refresh=True):
 		if refresh:
 			self.portlist_refresh()
-		for (port, desc, hwid) in self.port_list:
-			print(f"{port:20}")
-			print(f"    desc: {desc}")
-			print(f"    hwid: {hwid}")
+		for pinfo in self.port_list:
+			print(f"{pinfo.name}")
+			print(f"    desc: {pinfo.description}")
+			print(f"    hwid: {pinfo.hwid}")
+
+	def serialno_get(self, portid):
+		for pinfo_i in self.port_list:
+			if pinfo_i.name == portid:
+				return pinfo_i.serial_number
+		return None
 
 	def portid_fromserialno(self, sn):
 		sn = sn.lower()
-		for (port, desc, hwid) in self.port_list:
-			hwid_split = hwid.split()
-			for v in hwid_split:
-				if "SER=" in v:
-					sn_i = v.split("=")[-1]
-					if sn_i.lower() == sn:
-						return port
+		for pinfo_i in self.port_list:
+			sn_i:str = pinfo_i.serial_number
+			if sn_i.lower() == sn:
+				return pinfo_i.name
 		return None
 
 

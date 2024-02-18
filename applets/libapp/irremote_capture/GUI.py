@@ -81,11 +81,28 @@ def EHspacerbtn_click(btn:tk.Button, env:OperatingEnvironment):
 #==GUI Application
 #===============================================================================
 class TKapp:
-	def __init__(self, env:OperatingEnvironment, com:Serial, apptitle="IRremote-capture"):
+	def __init__(self, env:OperatingEnvironment, portid=None, apptitle="IRremote-capture"):
 		self.env = env
-		self.com = com
+		self.com:Serial = None
 		self.apptitle = apptitle
+		self.portmgr = PortManager()
 		self.ctrldef = ControllerDef()
+		self.serial_close()
+		if portid != None:
+			self.serial_open(portid)
+		print(self.ctrlserialno)
+
+	def serial_close(self):
+		self.ctrlserialno = "Missing"
+		if self.com != None:
+			self.com.close()
+			self.com = None
+
+	def serial_open(self, portid):
+		#TODO: find a way to get serial number from open com port instead.
+		self.portmgr.portlist_refresh()
+		self.ctrlserialno = self.portmgr.serialno_get(portid)
+		self.com = Serial(portid)
 
 #-------------------------------------------------------------------------------
 	@staticmethod
