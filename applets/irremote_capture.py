@@ -2,6 +2,7 @@
 #-------------------------------------------------------------------------------
 from libapp.irremote_capture.Env import env
 from SerialGlue.Base import PortManager
+from serial import Serial
 
 
 #==
@@ -11,7 +12,8 @@ portmgr = PortManager()
 portmgr.portlist_diplay()
 
 from libapp.irremote_capture.GUI import TKapp as IRapp
-app = IRapp(env)
+com = Serial("COM7")
+app = IRapp(env, com)
 app.run()
 
 #Test serial:

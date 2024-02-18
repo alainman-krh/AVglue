@@ -1,15 +1,10 @@
 #irremote_capture/GUI.py
 #-------------------------------------------------------------------------------
 from AVglue.Base import Signal, OperatingEnvironment
-from IRglue.Base import ControllerCom, ControllerDef
+from AVglue.IRController import Serial, ControllerDef
 from SerialGlue.Base import PortManager
 from TKglue.Builders import TKButtonRows, SEP_ROW
 import tkinter as tk
-
-
-from .Env import env #Use simple environment for capturing IR signals
-ctrldef = ControllerDef()
-ctrlcom = ControllerCom()
 
 
 #==Define IRremote buttons
@@ -72,15 +67,6 @@ mediabtn_lyt = (
 )
 
 
-#==Helper functions
-#===============================================================================
-def AddCaptureButton(rows:TKButtonRows, lblmap:dict, fnEHandler, env:OperatingEnvironment):
-	rows.row_append(fill="both", expand=True)
-	rows.btnpack_change(side="left", fill="both", expand=True)
-	rows.createblock(lblmap, fnEHandler, data=env)
-	rows.btnpack_change() #Restore Default
-
-
 #==Button event hanlders
 #===============================================================================
 def EHremotebtn_click(btn:tk.Button, env:OperatingEnvironment):
@@ -95,9 +81,11 @@ def EHspacerbtn_click(btn:tk.Button, env:OperatingEnvironment):
 #==GUI Application
 #===============================================================================
 class TKapp:
-	def __init__(self, env:OperatingEnvironment, apptitle="IRremote-capture"):
+	def __init__(self, env:OperatingEnvironment, com:Serial, apptitle="IRremote-capture"):
 		self.env = env
+		self.com = com
 		self.apptitle = apptitle
+		self.ctrldef = ControllerDef()
 
 #-------------------------------------------------------------------------------
 	@staticmethod
@@ -112,7 +100,14 @@ class TKapp:
 		app.env.log_info("Capturing IR signals...")
 		siglist_ordered = filter(lambda item: item != SEP_ROW, siglist_ordered)
 		siglbl_ordmap = {signame: lblmap[signame] for signame in siglist_ordered}
-		ctrldef.btnlist_capture(siglbl_ordmap, ctrlcom)
+		app.ctrldef.btnlist_capture(siglbl_ordmap, app.env, app.com)
+
+#-------------------------------------------------------------------------------
+	def _capturebtn_add(self, rows:TKButtonRows, lblmap:dict, fnEHandler):
+		rows.row_append(fill="both", expand=True)
+		rows.btnpack_change(side="left", fill="both", expand=True)
+		rows.createblock(lblmap, fnEHandler, data=self)
+		rows.btnpack_change() #Restore Default
 
 #-------------------------------------------------------------------------------
 	def build_gui(self):
@@ -122,28 +117,28 @@ class TKapp:
 
 #Add channel buttons
 #-------------------------------------------------------------------------------
-		rows.createblock(channelbtn_lblmap, EHremotebtn_click, data=env, layout=channelbtn_lyt, row_autoappend=True)
-		AddCaptureButton(rows, {"capture_chan": "Capture channels"}, TKapp.EHcapturebtn_click, self)
+		rows.createblock(channelbtn_lblmap, EHremotebtn_click, data=self.env, layout=channelbtn_lyt, row_autoappend=True)
+		self._capturebtn_add(rows, {"capture_chan": "Capture channels"}, TKapp.EHcapturebtn_click)
 
 #Add navigation buttons
 #-------------------------------------------------------------------------------
-		rows.createblock(navbtn_lblmap, EHremotebtn_click, data=env, layout=navbtn_lyt, row_autoappend=True)
-		AddCaptureButton(rows, {"capture_nav": "Capture navigation"}, TKapp.EHcapturebtn_click, self)
+		rows.createblock(navbtn_lblmap, EHremotebtn_click, data=self.env, layout=navbtn_lyt, row_autoappend=True)
+		self._capturebtn_add(rows, {"capture_nav": "Capture navigation"}, TKapp.EHcapturebtn_click)
 
 #Add "app" buttons
 #-------------------------------------------------------------------------------
-		rows.createblock(appbtn_lblmap, EHremotebtn_click, data=env, layout=appbtn_lyt, row_autoappend=True)
-		AddCaptureButton(rows, {"capture_app": "Capture app buttons"}, TKapp.EHcapturebtn_click, self)
+		rows.createblock(appbtn_lblmap, EHremotebtn_click, data=self.env, layout=appbtn_lyt, row_autoappend=True)
+		self._capturebtn_add(rows, {"capture_app": "Capture app buttons"}, TKapp.EHcapturebtn_click)
 
 #Add media buttons
 #-------------------------------------------------------------------------------
-		rows.createblock(mediabtn_lblmap, EHremotebtn_click, data=env, layout=mediabtn_lyt, row_autoappend=True)
-		AddCaptureButton(rows, {"capture_media": "Capture media"}, TKapp.EHcapturebtn_click, self)
+		rows.createblock(mediabtn_lblmap, EHremotebtn_click, data=self.env, layout=mediabtn_lyt, row_autoappend=True)
+		self._capturebtn_add(rows, {"capture_media": "Capture media"}, TKapp.EHcapturebtn_click)
 
 #Add button spacer (easier to resize window)
 #-------------------------------------------------------------------------------
 		rows.row_append()
-		rows.createblock({"btn_spacer": ""}, EHspacerbtn_click, data=env)
+		rows.createblock({"btn_spacer": ""}, EHspacerbtn_click, data=self.env)
 
 #Keep references
 #-------------------------------------------------------------------------------
