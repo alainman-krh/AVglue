@@ -33,10 +33,21 @@ class TKButtonRows:
 			f.pack(**packopt)
 		return
 
-	def createblock(self, lblmap:dict, fnEHandler, data=None, layout:list=None, rowstart=None):
+	@staticmethod
+	def _layout_compute_rows(layout):
+		count = 1
+		for item in layout:
+			if item == SEP_ROW:
+				count += 1
+		return count
+
+	def createblock(self, lblmap:dict, fnEHandler, data=None, layout:list=None, rowstart=None, row_autoappend=False):
 		"""-fnEHandler: Event handler function with arguments: (btn:tk.Button, data)"""
 		if layout is None:
 			layout = lblmap.keys() #`dict`s are ordered - and have been for a while
+		if row_autoappend:
+			nrows = self._layout_compute_rows(layout)
+			self.row_append(nrows)
 		if rowstart is None:
 			rowstart = self.rowstart_default
 		row = rowstart

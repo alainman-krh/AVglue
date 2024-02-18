@@ -11,7 +11,7 @@ portmgr = PortManager()
 portmgr.portlist_diplay()
 
 from libapp.irremote_capture.GUI import TKapp as IRapp
-app = IRapp()
+app = IRapp(env)
 app.run()
 
 #Test serial:

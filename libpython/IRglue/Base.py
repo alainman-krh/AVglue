@@ -50,10 +50,9 @@ class ControllerDef:
 		self.devid = None #Device ID. Typically sereial number of serial device
 		pass
 
-	def btnlist_capture(siglbl_ordmap, com:ControllerCom):
-		for (sig, lbl) in siglbl_ordmap:
+	def btnlist_capture(self, siglbl_ordmap, com:ControllerCom):
+		for (sig, lbl) in siglbl_ordmap.items():
 			print(f"Press button: {lbl}.")
-			com.ser
 		return
 
 	def write(self, filepath):
