@@ -1,6 +1,6 @@
 #irremote_capture/GUI.py
 #-------------------------------------------------------------------------------
-from AVglue.Base import Signal, OperatingEnvironment
+from AVglue.Base import Signal, OperatingEnvironment, get_timestamp_file
 from AVglue.IRController import Serial, ControllerDef
 from SerialGlue.Base import PortManager
 from TKglue.Builders import TKButtonRows, SEP_ROW
@@ -30,13 +30,13 @@ navbtn_lblmap = { #Navigation buttons
 	"nav_up": "up", "nav_down": "down",
 	"nav_enter": "enter",
 	"nav_left": "left", "nav_right": "right",
-	"nav_return": "return", "nav_exit": "exit",
+	"nav_back": "back", "nav_exit": "exit",
 }
 navbtn_lyt = [
 	"nav_cfg", SEP_ROW,
 	"nav_menu", "nav_up", "nav_info", SEP_ROW,
 	"nav_left", "nav_enter", "nav_right", SEP_ROW,
-	"nav_return", "nav_down", "nav_exit",
+	"nav_back", "nav_down", "nav_exit",
 ]
 
 #-------------------------------------------------------------------------------
@@ -91,6 +91,9 @@ class TKapp:
 		if portid != None:
 			self.serial_open(portid)
 
+		tstamp = get_timestamp_file()
+		self.filepath_remote = f"remote_{tstamp}.toml"
+
 	def serial_close(self):
 		self.ctrlserialno = "Missing"
 		if self.com != None:
@@ -118,6 +121,10 @@ class TKapp:
 		siglist_ordered = filter(lambda item: item != SEP_ROW, siglist_ordered)
 		siglbl_ordmap = {signame: lblmap[signame] for signame in siglist_ordered}
 		app.ctrldef.btnlist_capture(siglbl_ordmap, app.env, app.com)
+		app.env.log_info("")
+		app.env.log_info("Capture complete. Displaying entire mapping table:")
+		app.ctrldef.map_display()
+		app.ctrldef.write(app.filepath_remote)
 
 #-------------------------------------------------------------------------------
 	def _capturebtn_add(self, rows:TKButtonRows, lblmap:dict, fnEHandler):

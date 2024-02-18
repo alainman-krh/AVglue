@@ -1,9 +1,13 @@
 #AVglue/Base.py
 #-------------------------------------------------------------------------------
 from abc import ABCMeta, abstractmethod
+from datetime import datetime
+
 
 #==Constants
 #===============================================================================
+FMT_TIMESTAMP = r"%Y-%m-%dT%H:%M:%S"
+FMT_TIMESTAMP_FILE = r"%Y%m%d_%Hh%Mm%Ss"
 MASK_INT64 = 0xFFFFFFFFFFFFFFFF #64-bit/16 nibbles
 
 
@@ -11,6 +15,16 @@ MASK_INT64 = 0xFFFFFFFFFFFFFFFF #64-bit/16 nibbles
 #===============================================================================
 def int64str(v):
 	return f"{v:016X}"
+
+def get_timestamp(t=None, fmt=None):
+	if t is None:
+		t = datetime.now()
+	if fmt is None:
+		fmt = FMT_TIMESTAMP
+	return t.strftime(fmt)
+
+def get_timestamp_file(t=None):
+	return get_timestamp(t, fmt=FMT_TIMESTAMP_FILE)
 
 
 #==General controller/worker classes (ex: for client-server applications)
