@@ -90,7 +90,6 @@ class TKapp:
 		self.serial_close()
 		if portid != None:
 			self.serial_open(portid)
-		print(self.ctrlserialno)
 
 	def serial_close(self):
 		self.ctrlserialno = "Missing"
@@ -103,6 +102,7 @@ class TKapp:
 		self.portmgr.portlist_refresh()
 		self.ctrlserialno = self.portmgr.serialno_get(portid)
 		self.com = Serial(portid)
+		self.env.log_info(f"Using SN={self.ctrlserialno} on {portid}")
 
 #-------------------------------------------------------------------------------
 	@staticmethod

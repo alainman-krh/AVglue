@@ -2,7 +2,6 @@
 #-------------------------------------------------------------------------------
 from libapp.irremote_capture.Env import env
 from SerialGlue.Base import PortManager
-from serial import Serial
 
       
 #==
@@ -11,6 +10,8 @@ env.log_info("COM ports detected on system (Candidates for IR reciever devices):
 portmgr = PortManager()
 portmgr.portlist_diplay()
 
+print("")
+env.log_info(f"Launching IRremote-capture...")
 from libapp.irremote_capture.GUI import TKapp as IRapp
 app = IRapp(env, "COM7")
 app.run()
