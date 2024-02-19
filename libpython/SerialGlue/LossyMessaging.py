@@ -24,7 +24,7 @@ r"""Useful code
 #===============================================================================
 class LossySerial:
 	"""Basically "de-bounces" incomming messages"""
-	def __init__(self, com:Serial, ignore_repeats=False, mingap=0.1, timeout=0.1):
+	def __init__(self, com:Serial, ignore_repeats=False, mingap=0.1, timeout=0):
 		"""!Warning!: changes `com.timeout` value."""
 		self.com = com
 		self.lastmsg_detected = None
@@ -35,7 +35,10 @@ class LossySerial:
 		self.verbose = False
 
 	def timeout_set(self, timeout, mingap=0):
-		if mingap < timeout: #Not practical
+		if timeout <= 0:
+			timeout = None
+			mingap = max(0, mingap)
+		elif mingap < timeout: #Not practical
 			mingap = timeout
 		self.mingap = mingap #Minimum timespan (sec) needed between messages to register as a new "detection" (human timescales).
 		self.com.timeout = timeout #Can be read
@@ -64,27 +67,28 @@ class LossySerial:
 			rpt_left = 0 #Next signal matching `lastmsg_detected` again is considered "detected"
 
 		lastmsg = self.lastmsg_detected
-		lastmsg_ignoringfirst = None
+		lastmsg_thisrun = None
 		lastmsg_timestamp = self.lastmsg_timestamp
 		while True:
 			msg = self.com.readline() #.decode("utf-8")
+			#print("BEEP") #DEBUG
 			now = time_now()
 			deltaT = now - lastmsg_timestamp
 			if b"" == msg: #Still want to return if timed out (avoid blocking thread).
 				#Don't NEED to reach self.minrepeat. Single detect(lastmsg)+timeout is ok!:
 				#print("deltaT", deltaT)
 				#Possibly "detected":
-				return self._lastmsg_update_maskrep(lastmsg_ignoringfirst, lastmsg_timestamp)
+				return self._lastmsg_update_maskrep(lastmsg_thisrun, lastmsg_timestamp)
 			elif deltaT > self.mingap:
-				if lastmsg_ignoringfirst is None: #Actually the first message we caught...
+				if lastmsg_thisrun is None: #Actually the first message we caught...
 					#...let's wait for the repeats (don't return right away):
 					lastmsg = msg
-					lastmsg_ignoringfirst = msg
+					lastmsg_thisrun = msg
 					lastmsg_timestamp = now
 					rpt_left = self.minrepeat
 				else:
 					#"detect" `lastmsg` first... we'll catch repeats of this message later on:
-					return self._lastmsg_update_maskrep(lastmsg_ignoringfirst, lastmsg_timestamp)
+					return self._lastmsg_update_maskrep(lastmsg_thisrun, lastmsg_timestamp)
 			elif (msg == lastmsg):
 				lastmsg_timestamp = now
 				if rpt_left <= 0:
@@ -94,7 +98,7 @@ class LossySerial:
 			else:
 				#Maybe last message was a glitch... reset
 				lastmsg = msg
-				lastmsg_ignoringfirst = msg
+				lastmsg_thisrun = msg
 				lastmsg_timestamp = now
 				rpt_left = self.minrepeat
 
