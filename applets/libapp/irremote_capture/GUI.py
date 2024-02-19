@@ -91,7 +91,7 @@ class TKapp:
 		self.serial_close()
 		if portid != None:
 			self.serial_open(portid)
-		self.irserialdetect = LossySerial(self.com)
+		self.irserialdetect = LossySerial(self.com, ignore_repeats=True)
 		tstamp = get_timestamp_file()
 		self.filepath_remote = f"remote_{tstamp}.toml"
 
