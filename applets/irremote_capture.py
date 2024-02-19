@@ -14,7 +14,13 @@ portmgr.portlist_diplay()
 print()
 env.log_info(f"Launching IRremote-capture...")
 app = IRapp(env, "COM7")
-app.run()
+#app.run()
+
+#Test capture:
+from types import SimpleNamespace
+btn = SimpleNamespace(btnid="capture_nav")
+app.ctrldef.verbose=True
+app.EHcapturebtn_click(btn, app)
 
 #Test serial:
 #from AVglue.SerialSignals import ConnectionManager, OperatingEnvironment

@@ -3,6 +3,7 @@
 from AVglue.Base import Signal, OperatingEnvironment, get_timestamp_file
 from AVglue.IRController import Serial, ControllerDef
 from SerialGlue.Base import PortManager
+from SerialGlue.LossyMessaging import LossySerial
 from TKglue.Builders import TKButtonRows, SEP_ROW
 import tkinter as tk
 
@@ -90,7 +91,7 @@ class TKapp:
 		self.serial_close()
 		if portid != None:
 			self.serial_open(portid)
-
+		self.irserialdetect = LossySerial(self.com)
 		tstamp = get_timestamp_file()
 		self.filepath_remote = f"remote_{tstamp}.toml"
 
@@ -120,7 +121,7 @@ class TKapp:
 		app.env.log_info("Capturing IR signals...")
 		siglist_ordered = filter(lambda item: item != SEP_ROW, siglist_ordered)
 		siglbl_ordmap = {signame: lblmap[signame] for signame in siglist_ordered}
-		app.ctrldef.btnlist_capture(siglbl_ordmap, app.env, app.com)
+		app.ctrldef.btnlist_capture(siglbl_ordmap, app.env, app.irserialdetect)
 		app.env.log_info("")
 		app.env.log_info("Capture complete. Displaying entire mapping table:")
 		app.ctrldef.map_display()

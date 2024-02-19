@@ -14,6 +14,10 @@ print(sys.executable)
 #Windows-Media bindings:
 #%pip install comtypes pycaw
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#Two very useful class-like definitions:
+from types import SimpleNamespace
+from collections import namedtuple
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 import win32com.client as COM
 shell = COM.Dispatch("WScript.Shell")
 shell.Run(r"cmd /K CD C:\ & Dir")

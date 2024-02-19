@@ -1,6 +1,7 @@
 #AVglue/IRController.py
 #-------------------------------------------------------------------------------
 from .Base import Signal, OperatingEnvironment
+from SerialGlue.LossyMessaging import LossySerial #Not necessary - but suggested
 from serial import Serial
 from time import time as time_now
 import toml
@@ -21,6 +22,7 @@ class ControllerDef:
 		self.siglast_data = 0
 		self.siglast_timestamp = time_now()
 		self.siglast_timeout = 2
+		self.verbose = False
 		pass
 
 #-------------------------------------------------------------------------------
@@ -47,30 +49,26 @@ class ControllerDef:
 		self.map[signame] = data
 		self.siglast_data = data
 
-	def btn_isnew(self, sigdata):
-		if time_now() - self.siglast_timestamp > self.siglast_timeout:
-			return True
-		if sigdata == self.siglast_data:
-			return False
-		return True
-
 #-------------------------------------------------------------------------------
-	def btnlist_capture(self, siglbl_ordmap, env:OperatingEnvironment, com:Serial):
+	def btnlist_capture(self, siglbl_ordmap:dict, env:OperatingEnvironment, com:LossySerial):
 		for (signame, lbl) in siglbl_ordmap.items():
 			print(f"Press button: {lbl}.")
 			detected = False
 			while not detected:
-				msg = com.readline().decode("utf-8")
+				msg = com.readline()
+				if msg is None: #Probably timeout
+					continue
+				msg = msg.decode("utf-8")
 				(sig, data) = env.message_tosignal(msg)
 				if sig is None:
-					env.log_error("--->Error trying to capture IR signal.")
+					env.log_error("--->Error trying to capture IR signal:")
+					env.log_error(f"--->{msg}")
 					continue
 
 				signame_in = sig.id
 				if "IR" == signame_in:
-					if self.btn_isnew(data):
-						self.btn_updatemap(signame, data)
-						detected = True
+					self.btn_updatemap(signame, data)
+					detected = True
 				else:
 					env.log_info(f"--->Ignoring detected signal: {signame_in}.")
 					print(f"Press button: {lbl} (retry).")
