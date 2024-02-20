@@ -54,9 +54,11 @@ class SignalTraps():
 		if response_map is None:
 			response_map = {}
 		self.response_map = response_map
-
 	def trap(self, sig:Signal):
 		return self.response_map.get(sig.id, None)
+	def display(self):
+		for (k, v) in self.response_map.items():
+			print(f"{k}: {v}")
 
 #-------------------------------------------------------------------------------
 class Decoder_Int64():
@@ -65,7 +67,7 @@ class Decoder_Int64():
 			response_map = []
 		self.response_map = response_map
 	
-	def add(self, action, pat, mask=None):
+	def add(self, pat, action, mask=None):
 		if mask is None:
 			mask = MASK_INT64
 		_pack = (action, pat, mask) #Create tuple
@@ -136,7 +138,7 @@ class OperatingEnvironment():
 				action:AbstractAction
 				self.data_int64 = data_int64
 				if self.verbose:
-					self.log_info(f"Triggering: ({sig.serialize()}, {data_int64}).")
+					self.log_info(f"Triggering: ({sig.serialize()}, 0x{data_int64:02X}).")
 				#self.log_info("Running " + action.serialize())
 				return action.run(self)
 		self.log_info(f'Signal not trapped: "{sig.serialize()}"')

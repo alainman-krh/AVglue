@@ -45,7 +45,7 @@ env.mode_add("notepad", [traps_mode, traps_notepad])
 #==Decode IR signals
 #===============================================================================
 decoder_ir = Decoder_Int64()
-decoder_ir.add(Action_LogString("Detected: Unknown IR message"), 0x00000000, mask=0x00000000) #Logs all remaining signals
+decoder_ir.add(0x00000000, Action_LogString("Detected: Unknown IR message"), mask=0x00000000) #Logs all remaining signals
 env.decoders_add("MEDIAPC:IRdecode", decoder_ir)
 
 
@@ -53,19 +53,19 @@ env.decoders_add("MEDIAPC:IRdecode", decoder_ir)
 #===============================================================================
 decode_vol = Decoder_Int64()
 #Values 1-9,0 set volume from minimum to maximum:
-decode_vol.add(Action_VolumeSet("MASTER", -27), 1)
-decode_vol.add(Action_VolumeSet("MASTER", -24), 2)
-decode_vol.add(Action_VolumeSet("MASTER", -21), 3)
-decode_vol.add(Action_VolumeSet("MASTER", -18), 4)
-decode_vol.add(Action_VolumeSet("MASTER", -15), 5)
-decode_vol.add(Action_VolumeSet("MASTER", -12), 6)
-decode_vol.add(Action_VolumeSet("MASTER", -9), 7)
-decode_vol.add(Action_VolumeSet("MASTER", -6), 8)
-decode_vol.add(Action_VolumeSet("MASTER", -3), 9)
-decode_vol.add(Action_VolumeSet("MASTER",  0), 0)
-decode_vol.add(Action_VolumeUpDown("MASTER", 1), 101) #Assumes sending `NUMBTN 101` means volume up
-decode_vol.add(Action_VolumeUpDown("MASTER", -1), 100) #Assumes sending `NUMBTN 101` means volume down
-decode_vol.add(Action_LogString("Detected: Unknown NUMBTN"), 0x00000000, mask=0x00000000) #Logs all remaining signals
+decode_vol.add(1, Action_VolumeSet("MASTER", -27))
+decode_vol.add(2, Action_VolumeSet("MASTER", -24))
+decode_vol.add(3, Action_VolumeSet("MASTER", -21))
+decode_vol.add(4, Action_VolumeSet("MASTER", -18))
+decode_vol.add(5, Action_VolumeSet("MASTER", -15))
+decode_vol.add(6, Action_VolumeSet("MASTER", -12))
+decode_vol.add(7, Action_VolumeSet("MASTER", -9))
+decode_vol.add(8, Action_VolumeSet("MASTER", -6))
+decode_vol.add(9, Action_VolumeSet("MASTER", -3))
+decode_vol.add(0, Action_VolumeSet("MASTER",  0))
+decode_vol.add(101, Action_VolumeUpDown("MASTER",  1)) #Assumes sending `NUMBTN 101` means volume up
+decode_vol.add(100, Action_VolumeUpDown("MASTER", -1)) #Assumes sending `NUMBTN 101` means volume down
+decode_vol.add(0x00000000, Action_LogString("Detected: Unknown NUMBTN"), mask=0x00000000) #Logs all remaining signals
 env.decoders_add("MEDIAPC:VolumeDecode", decode_vol)
 
 #Example on adding

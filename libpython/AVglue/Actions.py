@@ -53,11 +53,17 @@ class Action_LogString(AbstractAction):
 #-------------------------------------------------------------------------------
 class Action_DecodeInt64(AbstractAction):
 	"""Decode `env.data_int64` using Decoder_Int64 (pattern match)"""
-	def __init__(self, decoder_id):
+	def __init__(self, decoder_id, stashdata=False):
+		"""stashdata: True if signal data is to be written to state"""
 		self.decoder_id = decoder_id
+		self.statekey = None
+		if stashdata:
+			self.statekey = self.decoder_id + "--data"
 	def run(self, env:OperatingEnvironment):
 		#env.log_info(f"Decoding with {self.decoder_id}")
 		data = env.data_int64
+		if self.statekey != None:
+			env.state[self.statekey] = data
 		decoder = env.decoders_int64.get(self.decoder_id, None)
 		if decoder is None:
 			env.log_error(f"Decoder not found: {self.decoder_id}")
@@ -67,7 +73,32 @@ class Action_DecodeInt64(AbstractAction):
 			return False #Fail
 		return action.run(env)
 	def serialize(self):
-		return f"DECODEINT64 {self.decoder_id}"
+		stashdata = (self.statekey != None) #Reconstruct
+		return f"DECODEINT64 {self.decoder_id} {stashdata}"
+
+#-------------------------------------------------------------------------------
+class Action_DecodeInt64_Repeat(AbstractAction):
+	"""Repeat previously saved signal+`env.data_int64` using Decoder_Int64 (pattern match)"""
+	def __init__(self, decoder_id):
+		self.decoder_id = decoder_id
+		self.statekey = self.decoder_id + "--data"
+	def run(self, env:OperatingEnvironment):
+		#env.log_info(f"Decoding with {self.decoder_id}")
+		data = env.state.get(self.statekey, None)
+		if data is None:
+			env.log_error(f"Stashed data not found: {self.statekey}.")
+			return False #Fail
+
+		decoder = env.decoders_int64.get(self.decoder_id, None)
+		if decoder is None:
+			env.log_error(f"Decoder not found: {self.decoder_id}")
+			return False #Fail
+		action = decoder.decode(data) #Might be None... and so try
+		if action is None:
+			return False #Fail
+		return action.run(env)
+	def serialize(self):
+		return f"DECODEINT64REP {self.decoder_id}"
 
 #-------------------------------------------------------------------------------
 class Action_SwitchMode(AbstractAction):

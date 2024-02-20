@@ -18,9 +18,9 @@ env.mode_add("LivingroomMain", [traps_main])
 env.mode_setactive("LivingroomMain")
 
 decoder_ir = Decoder_Int64()
-decoder_ir.add(Action_LogString("NetStreamz:controller1:play"), 0xABCD123)
-decoder_ir.add(Action_LogString("NetStreamz:controller1"), 0xABCD000, mask=0xFFFF000) #Identifies controller... but not button
-decoder_ir.add(Action_LogString("NetStreamz:controller2"), 0xABCE000, mask=0xFFFF000)
+decoder_ir.add(0xABCD123, Action_LogString("NetStreamz:controller1:play"))
+decoder_ir.add(0xABCD000, Action_LogString("NetStreamz:controller1"), mask=0xFFFF000) #Identifies controller... but not button
+decoder_ir.add(0xABCE000, Action_LogString("NetStreamz:controller2"), mask=0xFFFF000)
 env.decoders_add("NetStreamz:IRdecode", decoder_ir)
 decoder_ir.display()
 
