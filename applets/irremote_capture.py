@@ -21,7 +21,7 @@ app.run()
 #===============================================================================
 if False: #Test capture:
 	from types import SimpleNamespace
-	btn = SimpleNamespace(btnid="capture_nav")
+	btn = SimpleNamespace(btnid="capture_app")
 	app.ctrldef.verbose=True
 	app.EHcapturebtn_click(btn, app)
 

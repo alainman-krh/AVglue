@@ -29,7 +29,8 @@ class LossySerial:
 		self.com = com
 		self.lastmsg_detected = None
 		self.lastmsg_timestamp = time_now()
-		self.minrepeat = 3 #Number of repeated detections before message is considered "detected".
+		#self.minrepeat = 3 #Number of repeated detections before message is considered "detected".
+		self.minrepeat = 0 #Don't "debounce": NEC protocol only sends a single actual signal (followed by repeats)
 		self.ignore_repeats = ignore_repeats
 		self.timeout_set(timeout, mingap)
 		self.verbose = False
@@ -82,18 +83,17 @@ class LossySerial:
 			elif deltaT > self.mingap:
 				if lastmsg_thisrun is None: #Actually the first message we caught...
 					#...let's wait for the repeats (don't return right away):
+					self.lastmsg_detected = None #Assume there was no previous message sent (new btn; not repeat)
 					lastmsg = msg
 					lastmsg_thisrun = msg
 					lastmsg_timestamp = now
 					rpt_left = self.minrepeat
 				else:
 					#"detect" `lastmsg` first... we'll catch repeats of this message later on:
+					#If self.lastmsg_detected... keep it. This one counts as a repeat
 					return self._lastmsg_update_maskrep(lastmsg_thisrun, lastmsg_timestamp)
 			elif (msg == lastmsg):
 				lastmsg_timestamp = now
-				if rpt_left <= 0:
-					#Possibly "detected" (if !ignore_repeats):
-					return self._lastmsg_update_maskrep(msg, now)
 				rpt_left -= 1
 			else:
 				#Maybe last message was a glitch... reset
@@ -102,3 +102,8 @@ class LossySerial:
 				lastmsg_timestamp = now
 				rpt_left = self.minrepeat
 
+			if rpt_left <= 0:
+				#Possibly "detected" (if !ignore_repeats):
+				return self._lastmsg_update_maskrep(msg, now)
+
+#Last line
