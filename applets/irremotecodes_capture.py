@@ -1,4 +1,4 @@
-#applets/irremote_capture.py
+#applets/irremotecodes_capture.py
 #-------------------------------------------------------------------------------
 from libapp.irremote_capture.GUI import TKapp as IRapp
 from libapp.irremote_capture.Env import env
@@ -13,6 +13,7 @@ portmgr.portlist_diplay()
 
 print()
 env.log_info(f"Launching IRremote-capture...")
+env.verbose=False
 app = IRapp(env, "COM7")
 app.run()
 
