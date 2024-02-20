@@ -111,9 +111,15 @@ class TKapp:
 #-------------------------------------------------------------------------------
 	@staticmethod
 	def EHcapturebtn_click(btn:tk.Button, app):
-		lblmap = None; siglist_ordered = None
-		if "capture_nav" == btn.btnid:
+		lblmap = None; siglist_ordered = None #Define scope
+		if "capture_chan" == btn.btnid:
+			lblmap = channelbtn_lblmap; siglist_ordered = channelbtn_lyt
+		elif "capture_nav" == btn.btnid:
 			lblmap = navbtn_lblmap; siglist_ordered = navbtn_lyt
+		elif "capture_app" == btn.btnid:
+			lblmap = appbtn_lblmap; siglist_ordered = appbtn_lyt
+		elif "capture_media" == btn.btnid:
+			lblmap = mediabtn_lblmap; siglist_ordered = mediabtn_lyt
 		else:
 			app.env.log_info(f"TODO: {btn.btnid}")
 			return
