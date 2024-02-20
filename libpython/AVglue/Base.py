@@ -73,16 +73,18 @@ class Decoder_Int64():
 		_pack = (action, pat, mask) #Create tuple
 		self.response_map.append(_pack)
 
-	def decode(self, data):
+	def decode(self, env, data):
 		if data is None:
-			print("WARN: No data to be decoded")
+			if env.verbose:
+				env.log_error("WARN: No data to be decoded")
 			return None
 		for (action, pat, mask) in self.response_map:
 			if (data & mask) == pat:
 				action:AbstractAction
 				#print(action.serialize())
 				return action
-		print("WARN: No mapping found")	
+		if env.verbose:
+			env.log_error(f"WARN: No mapping found for data={data:02X}")	
 		return None
 
 	def display(self):
@@ -90,7 +92,7 @@ class Decoder_Int64():
 			action:AbstractAction
 			astr = action.serialize()
 
-			print(f'"{astr}", {int64str(pat)}, mask={int64str(mask)}')
+			print(f'{int64str(pat)}, mask={int64str(mask)} -> "{astr}"')
 
 
 #==OperatingEnvironment

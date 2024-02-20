@@ -53,22 +53,29 @@ class Action_LogString(AbstractAction):
 #-------------------------------------------------------------------------------
 class Action_DecodeInt64(AbstractAction):
 	"""Decode `env.data_int64` using Decoder_Int64 (pattern match)"""
-	def __init__(self, decoder_id, stashdata=False):
-		"""stashdata: True if signal data is to be written to state"""
+	def __init__(self, decoder_id, stashdata=False, clear_stash=tuple()):
+		"""
+		-stashdata: True if signal data is to be written to state.
+		-clear_stash: stash values to clear on run()."""
 		self.decoder_id = decoder_id
 		self.statekey = None
 		if stashdata:
 			self.statekey = self.decoder_id + "--data"
+		if (type(clear_stash) is str):
+			clear_stash = (clear_stash,) #Make it a tuple
+		self.clear_stash = tuple(id + "--data" for id in clear_stash)
 	def run(self, env:OperatingEnvironment):
 		#env.log_info(f"Decoding with {self.decoder_id}")
 		data = env.data_int64
+		for k in self.clear_stash:
+			env.state[k] = None
 		if self.statekey != None:
 			env.state[self.statekey] = data
 		decoder = env.decoders_int64.get(self.decoder_id, None)
 		if decoder is None:
 			env.log_error(f"Decoder not found: {self.decoder_id}")
 			return False #Fail
-		action = decoder.decode(data) #Might be None... and so try
+		action = decoder.decode(env, data) #Might be None... and so try
 		if action is None:
 			return False #Fail
 		return action.run(env)
@@ -86,14 +93,15 @@ class Action_DecodeInt64_Repeat(AbstractAction):
 		#env.log_info(f"Decoding with {self.decoder_id}")
 		data = env.state.get(self.statekey, None)
 		if data is None:
-			env.log_error(f"Stashed data not found: {self.statekey}.")
+			if env.verbose:
+				env.log_info(f"Stashed data not yet present: {self.statekey}.")
 			return False #Fail
 
 		decoder = env.decoders_int64.get(self.decoder_id, None)
 		if decoder is None:
 			env.log_error(f"Decoder not found: {self.decoder_id}")
 			return False #Fail
-		action = decoder.decode(data) #Might be None... and so try
+		action = decoder.decode(env, data) #Might be None... and so try
 		if action is None:
 			return False #Fail
 		return action.run(env)

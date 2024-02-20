@@ -32,11 +32,12 @@ def serial_open(env:OperatingEnvironment):
 print()
 env.log_info(f"Initializing {APPNAME}...")
 com:Serial = serial_open(env)
-ircom = LossySerial(com)
+ircom = LossySerial(com, timeout=0)
 
 while True:
 	msg = ircom.readline()
 	if msg is None: #Probably timeout
+		ircom.reset_input_buffer()
 		continue
 	msg = msg.decode("utf-8")
 	(sig, data) = env.message_tosignal(msg)
@@ -44,6 +45,9 @@ while True:
 		env.log_error("--->Error trying to capture IR signal:")
 		env.log_error(f"--->{msg}")
 		continue
+	elif WindowsMediaControl.IRBTN_POWER == data:
+		env.log_info("Quitting")
+		break
 
 	signame_in = sig.id
 	if signame_in in ("IR", "IR-RPT"):

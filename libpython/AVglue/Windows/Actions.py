@@ -1,11 +1,14 @@
 #AVglue/Windows/Actions.py: Windows integrations
 #-------------------------------------------------------------------------------
 from AVglue.Base import OperatingEnvironment, AbstractAction
+from AVglue.PythonTools import clamp2range
 from pycaw.pycaw import IAudioEndpointVolume
 import win32com.client as COM
 import win32con as winCONST
 import win32api
 from time import sleep
+
+RANGE_WINVOLUME = (-96, 0) #Valid range for volume in dB
 
 
 #==Concrete Actions
@@ -68,10 +71,10 @@ class Action_VolumeSet(AbstractAction):
 	def __init__(self, chanid, level_dB):
 		self.chanid = chanid
 		self.level_dB = level_dB
-		range_valid = (-96, 0)
-		if not (range_valid[0] <= level_dB <= range_valid[1]):
+		(volmin, volmax) = RANGE_WINVOLUME
+		if not (volmin <= level_dB <= volmax):
 			#Seems to be limits of API:
-			raise Exception(f"Volume out of range: {level_dB} (limits: {range_valid})")
+			raise Exception(f"Volume out of range: {level_dB} (limits: {RANGE_WINVOLUME})")
 	def run(self, env:OperatingEnvironment):
 		if "MASTER" == self.chanid:
 			volume:IAudioEndpointVolume = env.state["WINAUDIO:VOLUME"]
@@ -102,6 +105,26 @@ class Action_VolumeUpDown(AbstractAction):
 		return True
 	def serialize(self):
 		return f"VOLUPDN {self.chanid}"
+
+#-------------------------------------------------------------------------------
+class Action_VolumeUpDown_dB(AbstractAction):
+	"""Step up channel volume"""
+	def __init__(self, chanid, delta):
+		self.chanid = chanid
+		self.delta = delta
+	def run(self, env:OperatingEnvironment):
+		if "MASTER" == self.chanid:
+			volume:IAudioEndpointVolume = env.state["WINAUDIO:VOLUME"]
+			level_dB = volume.GetMasterVolumeLevel()
+			level_dB += self.delta
+			level_dB = clamp2range(RANGE_WINVOLUME, level_dB)
+			volume.SetMasterVolumeLevel(level_dB, None)
+		else:
+			env.log_info(f"Channel ID not supported: {self.chanid}")
+			return False #Fail
+		return True
+	def serialize(self):
+		return f"VOLUPDNDB {self.chanid}"
 
 #-------------------------------------------------------------------------------
 class Action_VolumeMute(AbstractAction):

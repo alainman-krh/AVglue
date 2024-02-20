@@ -59,6 +59,7 @@ class ControllerDef:
 				if msg is None: #Probably timeout
 					continue
 				msg = msg.decode("utf-8")
+				#print(msg) #DEBUG
 				(sig, data) = env.message_tosignal(msg)
 				if sig is None:
 					env.log_error("--->Error trying to capture IR signal:")
