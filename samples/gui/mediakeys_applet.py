@@ -4,7 +4,9 @@ from AVglue.Windows.Actions import *
 from AVglue.Actions import *
 from TKglue.EventHandling import wgt_sethandler
 import tkinter as tk
+from os.path import basename
 
+APPNAME = basename(__file__)
 
 #Alias to AVGlue.OperatingEnvironment:
 from PySystemDefs import MediaPC1
@@ -39,3 +41,5 @@ app = "Calculator"
 #Action_SendKeys("3", app, twait=0.5).run(env)
 #Action_SendVirtKey(winCONST.VK_DECIMAL).run(env)
 #Action_SendKeys("14").run(env)
+
+print(f"WARN: {APPNAME} not yet implemented.")
