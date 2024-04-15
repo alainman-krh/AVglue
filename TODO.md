@@ -11,6 +11,8 @@ Action_TriggerLocal will be part of a Messaging class so it doesn't have to be c
 - 3 Modes: YT (launch YT+80% vol), Music (Launch spotify+100%vol), Math (Launch calc + 20%vol), Python (Launch python + mute)
 
 # TODO
+- Integrate data_int64 with Signal
+- Construct decoder from env... then fill (less strange to read)
 - Send IR somehow
   - Daughterboard?
   - Direct RP2040
