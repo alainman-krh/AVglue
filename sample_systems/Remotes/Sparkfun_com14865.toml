@@ -1,0 +1,10 @@
+btn_power = "0x10EFD827"
+nav_up = "0x10EFA05F"
+nav_left = "0x10EF10EF"
+nav_enter = "0x10EF20DF"
+nav_right = "0x10EF807F"
+nav_down = "0x10EF00FF"
+btn_a = "0x10EFF807"
+btn_b = "0x10EF7887"
+btn_c = "0x10EF58A7"
+
