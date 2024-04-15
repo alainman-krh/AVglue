@@ -71,11 +71,12 @@ mediabtn_lyt = (
 #==Button event hanlders
 #===============================================================================
 def EHremotebtn_click(btn:tk.Button, env:OperatingEnvironment):
-	#A real button on the remote
+	#What happens when user clicks on GUI "remote" button
 	signame = btn.btnid
-	env.signal_trigger(Signal(signame))
+	env.signal_trigger(Signal(signame)) #We send the signal for that button (not the IR signal though)
 
 def EHspacerbtn_click(btn:tk.Button, env:OperatingEnvironment):
+	#What happens when user clicks on GUI space
 	env.log_info("Spacer button. Clicking does nothing.")
 
 
@@ -91,7 +92,8 @@ class TKapp:
 		self.serial_close()
 		if portid != None:
 			self.serial_open(portid)
-		self.irserialdetect = LossySerial(self.com, mingap=0.1, ignore_repeats=True)
+		self.ircom = LossySerial(self.com, mingap=0.1, ignore_repeats=True)
+		self.ircom.reset_input_buffer() #Skip over initial data (typically not IR messages)
 		tstamp = get_timestamp_file()
 		self.filepath_remote = f"remote_{tstamp}.toml"
 
@@ -111,6 +113,7 @@ class TKapp:
 #-------------------------------------------------------------------------------
 	@staticmethod
 	def EHcapturebtn_click(btn:tk.Button, app):
+		#What happens when user clicks on a "capture" GUI button
 		lblmap = None; siglist_ordered = None #Define scope
 		if "capture_chan" == btn.btnid:
 			lblmap = channelbtn_lblmap; siglist_ordered = channelbtn_lyt
@@ -124,10 +127,11 @@ class TKapp:
 			app.env.log_info(f"TODO: {btn.btnid}")
 			return
 
+		app:TKapp = app #For code analysis
 		app.env.log_info("Capturing IR signals...")
 		siglist_ordered = filter(lambda item: item != SEP_ROW, siglist_ordered)
 		siglbl_ordmap = {signame: lblmap[signame] for signame in siglist_ordered}
-		app.ctrldef.btnlist_capture(siglbl_ordmap, app.env, app.irserialdetect)
+		app.ctrldef.btnlist_capture(siglbl_ordmap, app.env, app.ircom)
 		app.env.log_info("")
 		app.env.log_info("Capture complete. Displaying entire mapping table:")
 		app.ctrldef.map_display()

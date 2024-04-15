@@ -22,7 +22,7 @@ traps_main = SignalTraps({
 	"VOLMUTE-TOGGLE": Action_VolumeMute("MASTER"),
 	"VOL+": Action_VolumeUpDown("MASTER", 1),
 	"VOL-": Action_VolumeUpDown("MASTER", -1),
-	"IR": Action_DecodeInt64("MEDIAPC:IRdecode"), #TODO: Get some example
+	"IRNEC": Action_DecodeInt64("MEDIAPC:IRdecode"), #TODO: Get some example
 	"NUMBTN": Action_DecodeInt64("MEDIAPC:VolumeDecode"), #Not necessarily generate from IR signal
 })
 env.mode_add("default", [traps_mode, traps_main])

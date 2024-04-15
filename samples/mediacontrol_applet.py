@@ -9,7 +9,7 @@ from serial import Serial
 
 APPNAME = basename(__file__)
 env = WindowsMediaControl.env #Alias
-env.verbose = False
+env.verbose = False #Useful to detect IR remote codes
 
 
 #==Configuration/helper functions
@@ -33,6 +33,7 @@ print()
 env.log_info(f"Initializing {APPNAME}...")
 com:Serial = serial_open(env)
 ircom = LossySerial(com, timeout=0)
+ircom.reset_input_buffer() #Skip over initial data (typically not IR messages)
 
 while True:
 	msg = ircom.readline()
@@ -50,7 +51,7 @@ while True:
 		break
 
 	signame_in = sig.id
-	if signame_in in ("IR", "IR-RPT"):
+	if "IR" == signame_in[:2]:
 		env.signal_trigger(Signal(signame_in), data_int64=data)
 	else:
 		env.log_info(f"--->Ignoring detected signal: {signame_in}.")

@@ -8,7 +8,7 @@ from os.path import basename
 from serial import Serial
 
 APPNAME = basename(__file__)
-env.com_portid = "COM7" #Provides connection info to serial_open()
+env.com_portid = "COM9" #Provides connection info to serial_open()
 #NOTE: serial port device should really be accessed by serial name - not "portid".
 env.verbose = False
 IRBTN_POWER = 0xABCD #TODO
@@ -35,6 +35,7 @@ print()
 env.log_info(f"Initializing {APPNAME}...")
 com:Serial = serial_open(env)
 ircom = LossySerial(com, timeout=0)
+ircom.reset_input_buffer() #Skip over initial data (typically not IR messages)
 
 while True:
 	msg = ircom.readline()

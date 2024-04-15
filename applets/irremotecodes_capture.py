@@ -14,7 +14,7 @@ portmgr.portlist_diplay()
 print()
 env.log_info(f"Launching IRremote-capture...")
 env.verbose=False
-app = IRapp(env, "COM7")
+app = IRapp(env, "COM9")
 app.run()
 
 

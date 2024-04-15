@@ -42,11 +42,18 @@ class Action_SendKeys(AbstractAction):
 class Action_SendVirtKey(AbstractAction):
 	"""Sends a key sequence"""
 	#TODO: Send to a particular application???
-	def __init__(self, vk, appname=None, twait=0):
+	def __init__(self, vk, appname=None, twait=0, modctrl=False, modalt=False, modshift=False):
 		"""-appname=0 sends key sequence to active window.
 		-vk: defined in constants-module: `win32con` (ex: `win32con.VK_MEDIA_PLAY_PAUSE`)."""
 		self.appname = appname
 		self.vk = vk
+		self.modlist = []
+		if modctrl:
+			self.modlist.append(winCONST.VK_LCONTROL)
+		if modalt:
+			self.modlist.append(winCONST.VK_LMENU)
+		if modshift:
+			self.modlist.append(winCONST.VK_LSHIFT)
 		self.twait = twait
 		self.shell = COM.Dispatch("WScript.Shell")
 
@@ -56,8 +63,12 @@ class Action_SendVirtKey(AbstractAction):
 		if self.twait > 0:
 			sleep(self.twait)
 		bscan = win32api.MapVirtualKey(self.vk, 0)
+		for k in self.modlist:
+			win32api.keybd_event(k, bscan)
 		win32api.keybd_event(self.vk, bscan)
 		win32api.keybd_event(self.vk, bscan, winCONST.KEYEVENTF_KEYUP)
+		for k in self.modlist[::-1]: #Reversed
+			win32api.keybd_event(k, bscan, winCONST.KEYEVENTF_KEYUP)
 		if env.verbose:
 			env.log_info(f"Sending VK: `{self.vk}` (hwcode: {bscan})")
 		return True #success
