@@ -23,6 +23,11 @@ shell = COM.Dispatch("WScript.Shell")
 shell.Run(r"cmd /K CD C:\ & Dir")
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 import win32com.client as COM
+shellapp = COM.Dispatch("Shell.Application")
+path_downloads = shellapp.Namespace("shell:Downloads").Self.Path
+print(path_downloads)
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+import win32com.client as COM
 from time import sleep
 shell = COM.Dispatch("WScript.Shell")
 x=shell.Run("calc.exe")
